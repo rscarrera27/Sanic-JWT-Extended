@@ -73,6 +73,8 @@ class JWTManager(object):
         register_default_callbacks(app)
         self._set_default_configuration_options(app)
         self._set_exception_callbacks(app)
+        self._create_access_token(app)
+        self._create_refresh_token(app)
         app.json_encoder = JSONEncoder
 
     def _set_exception_callbacks(self, app: Sanic):
@@ -413,42 +415,53 @@ class JWTManager(object):
         self._encode_key_callback = callback
         return callback
 
-    def _create_refresh_token(self, identity: Any, expires_delta: datetime.timedelta =None) -> str:
-        if expires_delta is None:
-            expires_delta = config.refresh_expires
+    def _create_refresh_token(self, app: Sanic):
+        config = app.jwt.config
 
-        if config.user_claims_in_refresh_token:
-            user_claims: Awaitable[dict] = self._user_claims_callback(identity)
-        else:
-            user_claims = None
+        async def fn(identity: Any, expires_delta: datetime.timedelta =None) -> str:
+            if expires_delta is None:
+                expires_delta = config.refresh_expires
 
-        refresh_token: str = encode_refresh_token(
-            identity=self._user_identity_callback(identity),
-            secret=self._encode_key_callback(identity),
-            algorithm=config.algorithm,
-            expires_delta=expires_delta,
-            user_claims=user_claims,
-            csrf=config.csrf_protect,
-            identity_claim_key=config.identity_claim_key,
-            user_claims_key=config.user_claims_key,
-            json_encoder=config.json_encoder
-        )
-        return refresh_token
+            if config.user_claims_in_refresh_token:
+                user_claims: Awaitable[dict] = await self._user_claims_callback(identity)
+            else:
+                user_claims = None
 
-    def _create_access_token(self, identity: Any, fresh: bool=False, expires_delta: datetime.timedelta=None) -> str:
-        if expires_delta is None:
-            expires_delta = config.access_expires
+            refresh_token: str = encode_refresh_token(
+                identity=await self._user_identity_callback(identity),
+                secret=await self._encode_key_callback(identity),
+                algorithm=config.algorithm,
+                expires_delta=expires_delta,
+                user_claims=user_claims,
+                csrf=config.csrf_protect,
+                identity_claim_key=config.identity_claim_key,
+                user_claims_key=config.user_claims_key,
+                json_encoder=config.json_encoder
+            )
+            return refresh_token
 
-        access_token: str = encode_access_token(
-            identity=self._user_identity_callback(identity),
-            secret=self._encode_key_callback(identity),
-            algorithm=config.algorithm,
-            expires_delta=expires_delta,
-            fresh=fresh,
-            user_claims=self._user_claims_callback(identity),
-            csrf=config.csrf_protect,
-            identity_claim_key=config.identity_claim_key,
-            user_claims_key=config.user_claims_key,
-            json_encoder=config.json_encoder
-        )
-        return access_token
+        app.create_refresh_token = fn
+
+    def _create_access_token(self, app):
+        config = app.jwt.config
+
+        async def fn(identity: Any, fresh: bool=False, expires_delta: datetime.timedelta=None) -> str:
+            if expires_delta is None:
+                expires_delta = config.access_expires
+
+            access_token: str = encode_access_token(
+                identity=await self._user_identity_callback(identity),
+                secret=await self._encode_key_callback(identity),
+                algorithm=config.algorithm,
+                expires_delta=expires_delta,
+                fresh=fresh,
+                user_claims=await self._user_claims_callback(identity),
+                csrf=config.csrf_protect,
+                identity_claim_key=config.identity_claim_key,
+                user_claims_key=config.user_claims_key,
+                json_encoder=config.json_encoder
+            )
+            return access_token
+
+        app.create_access_token = fn
+

@@ -10,14 +10,7 @@ from sanic_jwt_extended.exceptions import (
     RevokedTokenError, FreshTokenRequired, CSRFError, UserLoadError,
     UserClaimsVerificationError
 )
-from sanic_jwt_extended.default_callbacks import (
-    default_expired_token_callback, default_user_claims_callback,
-    default_user_identity_callback, default_invalid_token_callback,
-    default_unauthorized_callback, default_needs_fresh_token_callback,
-    default_revoked_token_callback, default_user_loader_error_callback,
-    default_claims_verification_callback, default_verify_claims_failed_callback,
-    default_decode_key_callback, default_encode_key_callback
-)
+from sanic_jwt_extended.default_callbacks import register_default_callbacks
 from sanic_jwt_extended.tokens import (
     encode_refresh_token, encode_access_token
 )
@@ -45,9 +38,9 @@ class JWTManager(object):
     _needs_fresh_token_callback: Callable[[], Awaitable[HTTPResponse]]
     _revoked_token_callback: Callable[[], Awaitable[HTTPResponse]]
     _user_loader_callback: Callable[..., Awaitable[Any]]
-    _user_loader_error_callback: Callable[[str], Awaitable[HTTPResponse]]
+    _user_loader_error_callback: Callable[[Any], Awaitable[HTTPResponse]]
     _token_in_blacklist_callback: Callable[..., Awaitable[bool]]
-    _claims_verification_callback: Callable[..., Awaitable[bool]]
+    _claims_verification_callback: Callable[[Any], Awaitable[bool]]
     _verify_claims_failed_callback: Callable[[], Awaitable[HTTPResponse]]
     _decode_key_callback: Callable[[str], Awaitable[str]]
     _encode_key_callback: Callable[[str], Awaitable[str]]
@@ -62,20 +55,6 @@ class JWTManager(object):
         """
         # Register the default error handler callback methods. These can be
         # overridden with the appropriate loader decorators
-        self._user_claims_callback = default_user_claims_callback
-        self._user_identity_callback = default_user_identity_callback
-        self._expired_token_callback = default_expired_token_callback
-        self._invalid_token_callback = default_invalid_token_callback
-        self._unauthorized_callback = default_unauthorized_callback
-        self._needs_fresh_token_callback = default_needs_fresh_token_callback
-        self._revoked_token_callback = default_revoked_token_callback
-        self._user_loader_callback = None
-        self._user_loader_error_callback = default_user_loader_error_callback
-        self._token_in_blacklist_callback = None
-        self._claims_verification_callback = default_claims_verification_callback
-        self._verify_claims_failed_callback = default_verify_claims_failed_callback
-        self._decode_key_callback = default_decode_key_callback
-        self._encode_key_callback = default_encode_key_callback
 
         # Register this extension with the flask app now (if it is provided)
         if app is not None:
@@ -91,6 +70,7 @@ class JWTManager(object):
         app.jwt.config = Config(app)
 
         # Set all the default configurations for this extension
+        register_default_callbacks(app)
         self._set_default_configuration_options(app)
         self._set_exception_callbacks(app)
         app.json_encoder = JSONEncoder

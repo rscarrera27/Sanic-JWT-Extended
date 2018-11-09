@@ -128,7 +128,7 @@ class JWTManager(object):
             return await self._verify_claims_failed_callback()
 
     @staticmethod
-    async def _set_default_configuration_options(app: Sanic):
+    def _set_default_configuration_options(app: Sanic):
         """
         Sets the default configuration options used by this extension
         """
@@ -137,7 +137,7 @@ class JWTManager(object):
 
         # Options for JWTs when the TOKEN_LOCATION is headers
         app.config.setdefault('JWT_HEADER_NAME', 'Authorization')
-        app.config.setdefault('JWT_HEADER_TYPE', 'Bearer')
+        app.config.setdefault('JWT_HEADER_TYPE', 'JWT')
 
         # Options for JWTs then the TOKEN_LOCATION is query_string
         app.config.setdefault('JWT_QUERY_STRING_NAME', 'jwt')
@@ -243,7 +243,7 @@ class JWTManager(object):
         self._expired_token_callback = callback
         return callback
 
-    def invalid_token_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
+    async def invalid_token_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if an
         invalid JWT attempts to access a protected endpoint. The default
@@ -258,7 +258,7 @@ class JWTManager(object):
         self._invalid_token_callback = callback
         return callback
 
-    def unauthorized_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
+    async def unauthorized_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if an
         no JWT can be found when attempting to access a protected endpoint.
@@ -273,7 +273,7 @@ class JWTManager(object):
         self._unauthorized_callback = callback
         return callback
 
-    def needs_fresh_token_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
+    async def needs_fresh_token_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if a
         valid and non-fresh token attempts to access an endpoint protected with
@@ -288,7 +288,7 @@ class JWTManager(object):
         self._needs_fresh_token_callback = callback
         return callback
 
-    def revoked_token_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
+    async def revoked_token_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if a
         revoked token attempts to access a protected endpoint. The default
@@ -302,7 +302,7 @@ class JWTManager(object):
         self._revoked_token_callback = callback
         return callback
 
-    def user_loader_callback_loader(self, callback: Callable[..., Awaitable[Any]]):
+    async def user_loader_callback_loader(self, callback: Callable[..., Awaitable[Any]]):
         """
         This decorator sets the callback function that will be called to
         automatically load an object when a protected endpoint is accessed.
@@ -319,7 +319,7 @@ class JWTManager(object):
         self._user_loader_callback = callback
         return callback
 
-    def user_loader_error_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
+    async def user_loader_error_loader(self, callback: Callable[[str], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if `None`
         is returned from the
@@ -335,7 +335,7 @@ class JWTManager(object):
         self._user_loader_error_callback = callback
         return callback
 
-    def token_in_blacklist_loader(self, callback: Callable[..., Awaitable[bool]]):
+    async def token_in_blacklist_loader(self, callback: Callable[..., Awaitable[bool]]):
         """
         This decorator sets the callback function that will be called when
         a protected endpoint is accessed and will check if the JWT has been
@@ -349,7 +349,7 @@ class JWTManager(object):
         self._token_in_blacklist_callback = callback
         return callback
 
-    def claims_verification_loader(self, callback: Callable[..., Awaitable[bool]]):
+    async def claims_verification_loader(self, callback: Callable[..., Awaitable[bool]]):
         """
         This decorator sets the callback function that will be called when
         a protected endpoint is accessed, and will check if the custom claims
@@ -365,7 +365,7 @@ class JWTManager(object):
         self._claims_verification_callback = callback
         return callback
 
-    def claims_verification_failed_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
+    async def claims_verification_failed_loader(self, callback: Callable[[], Awaitable[HTTPResponse]]):
         """
         This decorator sets the callback function that will be called if
         the :meth:`~sanic_jwt_extended.JWTManager.claims_verification_loader`
@@ -380,7 +380,7 @@ class JWTManager(object):
         self._verify_claims_failed_callback = callback
         return callback
 
-    def decode_key_loader(self, callback: Callable[[str], Awaitable[str]]):
+    async def decode_key_loader(self, callback: Callable[[str], Awaitable[str]]):
         """
         This decorator sets the callback function for getting the JWT decode key and
         can be used to dynamically choose the appropriate decode key based on token
@@ -396,7 +396,7 @@ class JWTManager(object):
         self._decode_key_callback = callback
         return callback
 
-    def encode_key_loader(self, callback: Callable[[str], Awaitable[str]]):
+    async def encode_key_loader(self, callback: Callable[[str], Awaitable[str]]):
         """
         This decorator sets the callback function for getting the JWT encode key and
         can be used to dynamically choose the appropriate encode key based on the

@@ -1,9 +1,10 @@
 import datetime
+from json import JSONEncoder
 
 from jwt import ExpiredSignatureError, InvalidTokenError
 from sanic.response import HTTPResponse
 
-from sanic_jwt_extended.config import config
+from sanic_jwt_extended.config import Config
 from sanic_jwt_extended.exceptions import (
     JWTDecodeError, NoAuthorizationError, InvalidHeaderError, WrongTokenError,
     RevokedTokenError, FreshTokenRequired, CSRFError, UserLoadError,
@@ -86,10 +87,13 @@ class JWTManager(object):
 
         :param app: A Sanic application
         """
+        app.jwt = self
+        app.jwt.config = Config(app)
 
         # Set all the default configurations for this extension
         self._set_default_configuration_options(app)
         self._set_exception_callbacks(app)
+        app.json_encoder = JSONEncoder
 
     def _set_exception_callbacks(self, app: Sanic):
         """

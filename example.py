@@ -3,11 +3,11 @@ from sanic.response import json
 from sanic.request import Request
 from sanic_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    Token, jwt_optional)
+    Token)
 
 app = Sanic(__name__)
 
-# Setup the Flask-JWT-Extended extension
+# Setup the Sanic-JWT-Extended extension
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
 JWTManager(app)
 
@@ -38,11 +38,11 @@ def login(request: Request):
 # Protect a view with jwt_required, which requires a valid access token
 # in the request to access.
 @app.route('/protected', methods=['GET'])
-@jwt_optional
+@jwt_required
 def protected(request: Request, token: Token):
     # Access the identity of the current user with get_jwt_identity
     current_user = token.raw_jwt
-    return json(dict(logged_in_as=current_user))
+    return json(dict(data=current_user))
 
 
 if __name__ == '__main__':

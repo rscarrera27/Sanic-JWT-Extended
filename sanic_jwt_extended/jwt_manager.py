@@ -10,6 +10,10 @@ from sanic_jwt_extended.exceptions import (
     JWTDecodeError, NoAuthorizationError, InvalidHeaderError, WrongTokenError,
     RevokedTokenError, FreshTokenRequired
 )
+from sanic_jwt_extended.tokens import (
+    encode_refresh_token, encode_access_token
+)
+
 
 class JWTManager:
     def __init__(self, app: Sanic):
@@ -87,3 +91,47 @@ class JWTManager:
         async def handle_fresh_token_required(request, e):
             return json({app.config.JWT_ERROR_MESSAGE_KEY: "Fresh token required"}, status=422)
 
+    @staticmethod
+    def _create_refresh_token(app: Sanic, identity, user_claims, expires_delta=None):
+        config = app.config
+
+        if expires_delta is None:
+            expires_delta = config.JWT_REFRESH_TOKEN_EXPIRES
+
+        if config.JWT_CLAIMS_IN_REFRESH_TOKEN:
+            user_claims = user_claims
+        else:
+            user_claims = None
+
+        refresh_token = encode_refresh_token(
+            identity=identity,
+            secret=config.JWT_SECRET_KEY,
+            algorithm=config.JWT_ALGORITHM,
+            expires_delta=expires_delta,
+            user_claims=user_claims,
+            identity_claim_key=config.JWT_IDENTITY_CLAIM,
+            user_claims_key=config.JWT_IDENTITY_CLAIM,
+            json_encoder=app.json_encoder
+        )
+
+        return refresh_token
+
+    @staticmethod
+    def _create_access_token(app: Sanic, identity, user_claims, fresh=False, expires_delta=None):
+        config = app.config
+
+        if expires_delta is None:
+            expires_delta = config.JWT_ACCESS_TOKEN_EXPIRES
+
+        access_token = encode_access_token(
+            identity=identity,
+            secret=config.JWT_SECRET_KEY,
+            algorithm=config.JWT_ALGORITHM,
+            expires_delta=expires_delta,
+            fresh=fresh,
+            user_claims=user_claims,
+            identity_claim_key=config.JWT_IDENTITY_CLAIM,
+            user_claims_key=config.JWT_IDENTITY_CLAIM,
+            json_encoder=app.json_encoder
+        )
+        return access_token

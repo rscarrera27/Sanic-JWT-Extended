@@ -81,3 +81,36 @@ def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims
     return _encode_jwt(token_data, expires_delta, secret, algorithm,
                        json_encoder=json_encoder)
 
+
+def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
+               user_claims_key):
+    """
+    Decodes an encoded JWT
+
+    :param encoded_token: The encoded JWT string to decode
+    :param secret: Secret key used to encode the JWT
+    :param algorithm: Algorithm used to encode the JWT
+    :param identity_claim_key: expected key that contains the identity
+    :param user_claims_key: expected key that contains the user claims
+    :param csrf_value: Expected double submit csrf value
+    :return: Dictionary containing contents of the JWT
+    """
+    # This call verifies the ext, iat, and nbf claims
+    data = jwt.decode(encoded_token, secret, algorithms=[algorithm])
+
+    # Make sure that any custom claims we expect in the token are present
+    if 'jti' not in data:
+        raise JWTDecodeError("Missing claim: jti")
+    if identity_claim_key not in data:
+        raise JWTDecodeError("Missing claim: {}".format(identity_claim_key))
+    if 'type' not in data or data['type'] not in ('refresh', 'access'):
+        raise JWTDecodeError("Missing or invalid claim: type")
+    if data['type'] == 'access':
+        if 'fresh' not in data:
+            raise JWTDecodeError("Missing claim: fresh")
+    if user_claims_key not in data:
+        data[user_claims_key] = {}
+
+    return data
+
+

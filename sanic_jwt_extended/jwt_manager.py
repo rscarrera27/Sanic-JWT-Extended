@@ -53,3 +53,37 @@ class JWTManager:
 
         app.json_encoder = JSONEncoder
 
+    @staticmethod
+    def _set_error_handlers(app: Sanic):
+        @app.exception(NoAuthorizationError)
+        async def handle_auth_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=401)
+
+        @app.exception(ExpiredSignatureError)
+        async def handle_expired_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: "Token has expired"}, status=401)
+
+        @app.exception(InvalidHeaderError)
+        async def handle_invalid_header_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
+
+        @app.exception(InvalidTokenError)
+        async def handle_invalid_token_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
+
+        @app.exception(JWTDecodeError)
+        async def handle_jwt_decode_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
+
+        @app.exception(WrongTokenError)
+        async def handle_wrong_token_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
+
+        @app.exception(RevokedTokenError)
+        async def handle_revoked_token_error(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: "Token has been revoked"}, status=422)
+
+        @app.exception(FreshTokenRequired)
+        async def handle_fresh_token_required(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: "Fresh token required"}, status=422)
+

@@ -114,3 +114,21 @@ def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
     return data
 
 
+class Token:
+    data: dict
+
+    def __init__(self, app, token: dict):
+        self.app = app
+        self.data = token
+
+    @property
+    def raw_jwt(self):
+        return self.data
+
+    @property
+    def jwt_identity(self):
+        return self.data.get(self.app.config.JWT_IDENTITY_CLAIM, None)
+
+    @property
+    def jwt_claims(self):
+        return self.data.get(self.app.config.JWT_USER_CLAIMS, {})

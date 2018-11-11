@@ -1,16 +1,25 @@
 from datetime import datetime
 from calendar import timegm
 from functools import wraps
+from typing import Dict, List
 
+from sanic import Sanic
 from sanic.request import Request
 
 from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError, FreshTokenRequired
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
 
-async def get_jwt_data(app, token):
+async def get_jwt_data(app: Sanic, token: str) -> Dict:
+    """
+    Decodes encoded JWT token by using extension setting
 
-    jwt_data = await decode_jwt(
+    :param app: A Sanic application
+    :param token: Encoded JWT string to decode
+    :return: Dictionary containing contents of the JWT
+    """
+
+    jwt_data: dict = await decode_jwt(
         encoded_token=token,
         secret=app.config.JWT_SECRET_KEY,
         algorithm=app.config.JWT_ALGORITHM,
@@ -21,21 +30,30 @@ async def get_jwt_data(app, token):
     return jwt_data
 
 
-async def get_jwt_data_in_request_header(app, request: Request):
-    header_name = app.config.JWT_HEADER_NAME
-    header_type = app.config.JWT_HEADER_TYPE
+async def get_jwt_data_in_request_header(app: Sanic, request: Request) -> Dict:
+    """
+    Get JWT token data from request header with configuration. raise NoAuthorizationHeaderError
+    when no jwt header. also raise InvalidHeaderError when malformed jwt header detected.
 
-    token_header = request.headers.get(header_name)
+    :param app: A Sanic application
+    :param request: Sanic request object that contains app
+    :return: Dictionary containing contents of the JWT
+    """
+    header_name: str = app.config.JWT_HEADER_NAME
+    header_type: str = app.config.JWT_HEADER_TYPE
+
+    token_header: str = request.headers.get(header_name)
 
     if not token_header:
         raise NoAuthorizationError("Missing {} Header".format(header_name))
 
-    parts = token_header.split()
+    parts: List[str] = token_header.split()
+
     if not header_type:
         if len(parts) != 1:
             msg = "Bad {} header. Expected value '<JWT>'".format(header_name)
             raise InvalidHeaderError(msg)
-        token = parts[0]
+        token: str = parts[0]
     else:
         if parts[0] != header_type or len(parts) != 2:
             msg = "Bad {} header. Expected value '{} <JWT>'".format(
@@ -43,18 +61,32 @@ async def get_jwt_data_in_request_header(app, request: Request):
                 header_type
             )
             raise InvalidHeaderError(msg)
-        token = parts[1]
+        token: str = parts[1]
 
-    data = await get_jwt_data(app, token)
+    data: Dict = await get_jwt_data(app, token)
     return data
 
 
-async def verify_jwt_data_type(token_data: dict, token_type: str):
+async def verify_jwt_data_type(token_data: dict, token_type: str) -> None:
+    """
+    Check jwt type with given argument. raise WrongTokenError if token type is not expected type,
+
+    :param token_data: Dictionary containing contents of the JWT
+    :param token_type: Token type that want to check (ex: access)
+    """
     if token_data["type"] != token_type:
         raise WrongTokenError('Only {} tokens are allowed'.format(token_type))
 
 
 def jwt_required(fn):
+    """
+    A decorator to protect a Sanic endpoint.
+    If you decorate an endpoint with this, it will ensure that the requester
+    has a valid access token before allowing the endpoint to be called.
+    and if token check passed this will insert Token object to kwargs,
+    This does not check the freshness of the access token.
+    See also: :func:`~sanic_jwt_extended.fresh_jwt_required`
+    """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         request = args[0]
@@ -68,6 +100,14 @@ def jwt_required(fn):
 
 
 def jwt_optional(fn):
+    """
+    A decorator to optionally protect a Sanic endpoint
+    If an access token in present in the request, this will insert filled Token object to kwargs.
+    If no access token is present in the request, this will insert Empty Token object to kwargs
+    If there is an invalid access token in the request (expired, tampered with,
+    etc), this will still call the appropriate error handler instead of allowing
+    the endpoint to be called as if there is no access token in the request.
+    """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         token = {}
@@ -86,6 +126,13 @@ def jwt_optional(fn):
 
 
 def fresh_jwt_required(fn):
+    """
+    A decorator to protect a Sanic endpoint.
+    If you decorate an endpoint with this, it will ensure that the requester
+    has a valid and fresh access token before allowing the endpoint to be
+    called.
+    See also: :func:`~sanic_jwt_extended.jwt_required`
+    """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         request = args[0]
@@ -110,6 +157,11 @@ def fresh_jwt_required(fn):
 
 
 def jwt_refresh_token_required(fn):
+    """
+    A decorator to protect a Sanic endpoint.
+    If you decorate an endpoint with this, it will ensure that the requester
+    has a valid refresh token before allowing the endpoint to be called.
+    """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         request = args[0]
@@ -117,7 +169,7 @@ def jwt_refresh_token_required(fn):
 
         token = await get_jwt_data_in_request_header(app, request)
         await verify_jwt_data_type(token, "refresh")
-        
+
         kwargs["token"] = Token(app, token)
 
         return await fn(*args, **kwargs)

@@ -28,8 +28,8 @@ def _encode_jwt(additional_token_data, expires_delta, secret, algorithm,
 
 
 async def encode_access_token(identity, secret, algorithm, expires_delta, fresh,
-                        user_claims, identity_claim_key, user_claims_key,
-                        json_encoder=None):
+                              user_claims, identity_claim_key, user_claims_key,
+                              json_encoder=None):
     if isinstance(fresh, datetime.timedelta):
         now = datetime.datetime.utcnow()
         fresh = timegm((now + fresh).utctimetuple())
@@ -49,8 +49,8 @@ async def encode_access_token(identity, secret, algorithm, expires_delta, fresh,
 
 
 async def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims,
-                         identity_claim_key, user_claims_key,
-                         json_encoder=None):
+                               identity_claim_key, user_claims_key,
+                               json_encoder=None):
     """
     Creates a new encoded (utf-8) refresh token.
 

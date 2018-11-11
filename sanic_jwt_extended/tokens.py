@@ -27,10 +27,9 @@ def _encode_jwt(additional_token_data, expires_delta, secret, algorithm,
     return encoded_token
 
 
-def encode_access_token(identity, secret, algorithm, expires_delta, fresh,
+async def encode_access_token(identity, secret, algorithm, expires_delta, fresh,
                         user_claims, identity_claim_key, user_claims_key,
                         json_encoder=None):
-
     if isinstance(fresh, datetime.timedelta):
         now = datetime.datetime.utcnow()
         fresh = timegm((now + fresh).utctimetuple())
@@ -49,7 +48,7 @@ def encode_access_token(identity, secret, algorithm, expires_delta, fresh,
                        json_encoder=json_encoder)
 
 
-def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims,
+async def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims,
                          identity_claim_key, user_claims_key,
                          json_encoder=None):
     """
@@ -82,8 +81,8 @@ def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims
                        json_encoder=json_encoder)
 
 
-def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
-               user_claims_key):
+async def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
+                     user_claims_key):
     """
     Decodes an encoded JWT
 
@@ -92,7 +91,6 @@ def decode_jwt(encoded_token, secret, algorithm, identity_claim_key,
     :param algorithm: Algorithm used to encode the JWT
     :param identity_claim_key: expected key that contains the identity
     :param user_claims_key: expected key that contains the user claims
-    :param csrf_value: Expected double submit csrf value
     :return: Dictionary containing contents of the JWT
     """
     # This call verifies the ext, iat, and nbf claims

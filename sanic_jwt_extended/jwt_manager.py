@@ -92,7 +92,7 @@ class JWTManager:
             return json({app.config.JWT_ERROR_MESSAGE_KEY: "Fresh token required"}, status=422)
 
     @staticmethod
-    def _create_refresh_token(app: Sanic, identity, user_claims, expires_delta=None):
+    async def _create_refresh_token(app: Sanic, identity, user_claims, expires_delta=None):
         config = app.config
 
         if expires_delta is None:
@@ -103,7 +103,7 @@ class JWTManager:
         else:
             user_claims = None
 
-        refresh_token = encode_refresh_token(
+        refresh_token = await encode_refresh_token(
             identity=identity,
             secret=config.JWT_SECRET_KEY,
             algorithm=config.JWT_ALGORITHM,
@@ -117,13 +117,13 @@ class JWTManager:
         return refresh_token
 
     @staticmethod
-    def _create_access_token(app: Sanic, identity, user_claims, fresh=False, expires_delta=None):
+    async def _create_access_token(app: Sanic, identity, user_claims, fresh=False, expires_delta=None):
         config = app.config
 
         if expires_delta is None:
             expires_delta = config.JWT_ACCESS_TOKEN_EXPIRES
 
-        access_token = encode_access_token(
+        access_token = await encode_access_token(
             identity=identity,
             secret=config.JWT_SECRET_KEY,
             algorithm=config.JWT_ALGORITHM,

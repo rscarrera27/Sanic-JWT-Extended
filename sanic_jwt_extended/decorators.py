@@ -85,6 +85,29 @@ def jwt_optional(fn):
     return wrapper
 
 
+def fresh_jwt_required(fn):
+    @wraps(fn)
+    async def wrapper(*args, **kwargs):
+        request = args[0]
+        app = request.app
+
+        token = await get_jwt_data_in_request_header(app, request)
+        fresh = token["fresh"]
+
+        if isinstance(fresh, bool):
+            if not fresh:
+                raise FreshTokenRequired('Fresh token required')
+        else:
+            now = timegm(datetime.utcnow().utctimetuple())
+            if fresh < now:
+                raise FreshTokenRequired('Fresh token required')
+
+        kwargs["token"] = Token(app, token)
+
+        return await fn(*args, **kwargs)
+    return wrapper
+
+
 def jwt_refresh_token_required(fn):
     @wraps(fn)
     async def wrapper(*args, **kwargs):

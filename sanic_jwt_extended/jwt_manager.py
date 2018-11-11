@@ -117,7 +117,7 @@ class JWTManager:
         return refresh_token
 
     @staticmethod
-    async def _create_access_token(app: Sanic, identity, user_claims, fresh=False, expires_delta=None):
+    async def _create_access_token(app: Sanic, identity, user_claims, fresh, expires_delta=None):
         config = app.config
 
         if expires_delta is None:

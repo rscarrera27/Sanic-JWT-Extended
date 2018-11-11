@@ -1,8 +1,10 @@
+from datetime import datetime
+from calendar import timegm
 from functools import wraps
 
 from sanic.request import Request
 
-from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError
+from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError, FreshTokenRequired
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
 
@@ -19,7 +21,7 @@ async def get_jwt_data(app, token):
     return jwt_data
 
 
-async def get_jwt_data_in_request_header(app, request: Request):
+async def get_jwt_data_in_request_header(app, request: Request, request_type: str):
     header_name = app.config.JWT_HEADER_NAME
     header_type = app.config.JWT_HEADER_TYPE
 
@@ -44,6 +46,9 @@ async def get_jwt_data_in_request_header(app, request: Request):
         token = parts[1]
 
     data = await get_jwt_data(app, token)
+    if request_type != data["type"]:
+        raise WrongTokenError('Only {} tokens are allowed'.format(request_type))
+
     return data
 
 
@@ -52,12 +57,7 @@ def jwt_required(fn):
     async def wrapper(*args, **kwargs):
         request = args[0]
         app = request.app
-
-        token = await get_jwt_data_in_request_header(app, request)
-
-        if token["type"] != "access":
-            raise WrongTokenError('Only access tokens are allowed')
-
+        token = await get_jwt_data_in_request_header(app, request, "access")
         kwargs["token"] = Token(app, token)
 
         return await fn(*args, **kwargs)
@@ -72,11 +72,7 @@ def jwt_optional(fn):
         app = request.app
 
         try:
-            token = get_jwt_data_in_request_header(app, request)
-
-            if token["type"] != "access":
-                raise WrongTokenError('Only access tokens are allowed')
-
+            token = get_jwt_data_in_request_header(app, request, "access")
         except (NoAuthorizationError, InvalidHeaderError):
             pass
 
@@ -91,7 +87,7 @@ def fresh_jwt_required(fn):
         request = args[0]
         app = request.app
 
-        token = await get_jwt_data_in_request_header(app, request)
+        token = await get_jwt_data_in_request_header(app, request, "access")
         fresh = token["fresh"]
 
         if isinstance(fresh, bool):
@@ -114,7 +110,7 @@ def jwt_refresh_token_required(fn):
         request = args[0]
         app = request.app
 
-        token = get_jwt_data_in_request_header(app, request)
+        token = await get_jwt_data_in_request_header(app, request, "refresh")
 
         if token["type"] != "refresh":
             raise WrongTokenError('Only refresh tokens are allowed')

@@ -6,9 +6,9 @@ from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError,
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
 
-def get_jwt_data(app, token):
+async def get_jwt_data(app, token):
 
-    jwt_data = decode_jwt(
+    jwt_data = await decode_jwt(
         encoded_token=token,
         secret=app.config.JWT_SECRET_KEY,
         algorithm=app.config.JWT_ALGORITHM,
@@ -19,7 +19,7 @@ def get_jwt_data(app, token):
     return jwt_data
 
 
-def get_jwt_data_in_request(app, request: Request):
+async def get_jwt_data_in_request_header(app, request: Request):
     header_name = app.config.JWT_HEADER_NAME
     header_type = app.config.JWT_HEADER_TYPE
 
@@ -43,36 +43,36 @@ def get_jwt_data_in_request(app, request: Request):
             raise InvalidHeaderError(msg)
         token = parts[1]
 
-    data = get_jwt_data(app, token)
+    data = await get_jwt_data(app, token)
     return data
 
 
 def jwt_required(fn):
     @wraps(fn)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         request = args[0]
         app = request.app
 
-        token = get_jwt_data_in_request(app, request)
+        token = await get_jwt_data_in_request_header(app, request)
 
         if token["type"] != "access":
             raise WrongTokenError('Only access tokens are allowed')
 
         kwargs["token"] = Token(app, token)
 
-        return fn(*args, **kwargs)
+        return await fn(*args, **kwargs)
     return wrapper
 
 
 def jwt_optional(fn):
     @wraps(fn)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         token = {}
         request = args[0]
         app = request.app
 
         try:
-            token = get_jwt_data_in_request(app, request)
+            token = get_jwt_data_in_request_header(app, request)
 
             if token["type"] != "access":
                 raise WrongTokenError('Only access tokens are allowed')
@@ -81,22 +81,22 @@ def jwt_optional(fn):
             pass
 
         kwargs["token"] = Token(app, token)
-        return fn(*args, **kwargs)
+        return await fn(*args, **kwargs)
     return wrapper
 
 
 def jwt_refresh_token_required(fn):
     @wraps(fn)
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         request = args[0]
         app = request.app
 
-        token = get_jwt_data_in_request(app, request)
+        token = get_jwt_data_in_request_header(app, request)
 
         if token["type"] != "refresh":
             raise WrongTokenError('Only refresh tokens are allowed')
 
         kwargs["token"] = Token(app, token)
 
-        return fn(*args, **kwargs)
+        return await fn(*args, **kwargs)
     return wrapper

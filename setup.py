@@ -5,8 +5,7 @@ import io
 import re
 from setuptools import setup
 
-with io.open('sanic_jwt_extended/__init__.py', encoding='utf-8') as f:
-    version = re.search(r"__version__ = '(.+)'", f.read()).group(1)
+from sanic_jwt_extended import __version__
 
 
 with open("README.md", "r") as f:
@@ -14,7 +13,7 @@ with open("README.md", "r") as f:
 
 
 setup(name='Sanic-JWT-Extended',
-      version=version,
+      version=__version__,
       url='https://github.com/devArtoria/Sanic-JWT-Extended',
       license='MIT',
       author='Lewis "devArtoria" Kim',

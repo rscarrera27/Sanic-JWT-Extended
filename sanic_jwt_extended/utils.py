@@ -1,6 +1,7 @@
 async def create_access_token(app, identity, user_claims=None, fresh=False, expires_delta=None):
     """
     Create a new access token.
+
     :param app: A Sanic application from request object
     :param identity: The identity of this token, which can be any data that is
                      json serializable. It can also be a python object

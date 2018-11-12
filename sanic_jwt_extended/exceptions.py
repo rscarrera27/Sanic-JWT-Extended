@@ -1,6 +1,6 @@
 class JWTExtendedException(Exception):
     """
-    Base except which all flask_jwt_extended errors extend
+    Base except which all sanic_jwt_extended errors extend
     """
     pass
 

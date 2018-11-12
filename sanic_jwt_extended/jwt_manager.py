@@ -16,18 +16,37 @@ from sanic_jwt_extended.tokens import (
 
 
 class JWTManager:
+    """
+    An object used to hold JWT settings for the
+    Sanic-GraphQL-Auth extension.
+    Instances of :class:`JWTManger` are *not* bound to specific apps, so
+    you can create one in the main body of your code and then bind it
+    to your app in a factory function.
+    """
     def __init__(self, app: Sanic):
+        """
+        Create the JWTManager instance. You can either pass a sanic application in directly
+        here to register this extension with the sanic app, or you can call init_app after creating
+        this object (in a factory pattern).
+        :param app: A sanic application
+        """
         if app is not None:
             self.init_app(app=app)
 
-        app.jwt = self
-
     def init_app(self, app: Sanic):
+        """
+        Register this extension with the sanic app.
+        :param app: A sanic application
+        """
         self._set_error_handlers(app=app)
-        self._set_default_configuration_options(app)
+        self._set_default_configuration_options(app=app)
+        app.jwt = self
 
     @staticmethod
     def _set_default_configuration_options(app):
+        """
+        Sets the default configuration options used by this extension
+        """
         # Where to look for the JWT. Available options are cookies or headers
         app.config.setdefault('JWT_TOKEN_LOCATION', ['headers'])
 
@@ -59,6 +78,9 @@ class JWTManager:
 
     @staticmethod
     def _set_error_handlers(app: Sanic):
+        """
+         Sets the error handler callbacks used by this extension
+         """
         @app.exception(NoAuthorizationError)
         async def handle_auth_error(request, e):
             return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=401)

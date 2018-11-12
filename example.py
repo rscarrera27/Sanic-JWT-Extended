@@ -3,7 +3,9 @@ from sanic.response import json
 from sanic.request import Request
 from sanic_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    Token, create_refresh_token, uuid)
+    create_refresh_token)
+import uuid
+from sanic_jwt_extended.tokens import Token
 
 app = Sanic(__name__)
 

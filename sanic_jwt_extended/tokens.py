@@ -6,7 +6,7 @@ from typing import Union, Dict, Callable
 
 import jwt
 
-from flask_jwt_extended.exceptions import JWTDecodeError
+from sanic_jwt_extended.exceptions import JWTDecodeError
 from sanic import Sanic
 
 

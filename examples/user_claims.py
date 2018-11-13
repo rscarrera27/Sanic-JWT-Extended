@@ -13,6 +13,8 @@ app = Sanic(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
 JWTManager(app)
 
+user_claim = {"VERI TAS": "LUX MEA"}
+
 
 # Provide a method to create access tokens. The create_access_token()
 # function is used to actually generate the token, and you can return
@@ -33,10 +35,8 @@ async def login(request: Request):
         return json({"msg": "Bad username or password"}, status=403)
 
     # Identity can be any data that is json serializable
-    access_token = await create_access_token(identity=username, app=request.app)
-    refresh_token = await create_refresh_token(identity=str(uuid.uuid4()), app=request.app)
-    return json(dict(access_token=access_token,
-                     refresh_token=refresh_token
+    access_token = await create_access_token(identity=username, app=request.app, user_claims=user_claim)
+    return json(dict(access_token=access_token
                      ), status=200)
 
 
@@ -46,9 +46,8 @@ async def login(request: Request):
 @jwt_required
 async def protected(request: Request, token: Token):
     # Access the identity of the current user with get_jwt_identity
-    current_user = token.raw_jwt
-    return json(dict(data=current_user))
-
+    user_claims = token.jwt_user_claims
+    return json(dict(data=user_claims))
 
 if __name__ == '__main__':
     app.run()

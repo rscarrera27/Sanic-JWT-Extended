@@ -12,7 +12,6 @@ from sanic import Sanic
 
 def _encode_jwt(additional_token_data: dict, expires_delta: datetime.timedelta, secret: str, algorithm: str,
                 json_encoder: Callable[..., str]) -> str:
-
     uid = str(uuid.uuid4())
     now = datetime.datetime.utcnow()
     token_data = {
@@ -33,7 +32,7 @@ def _encode_jwt(additional_token_data: dict, expires_delta: datetime.timedelta, 
 async def encode_access_token(identity: str, secret: str, algorithm: str, expires_delta: datetime.timedelta,
                               fresh: Union[datetime.timedelta, bool],
                               user_claims: dict, identity_claim_key: str, user_claims_key: str,
-                              json_encoder: Callable[..., str]=None) -> str:
+                              json_encoder: Callable[..., str] = None) -> str:
     """
     Creates a new encoded (utf-8) access token.
     :param identity: Identifier for who this token is for (ex, username). This

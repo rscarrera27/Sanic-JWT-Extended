@@ -132,7 +132,7 @@ class JWTManager:
             expires_delta=expires_delta,
             user_claims=user_claims,
             identity_claim_key=config.JWT_IDENTITY_CLAIM,
-            user_claims_key=config.JWT_IDENTITY_CLAIM,
+            user_claims_key=config.JWT_USER_CLAIMS,
             json_encoder=app.json_encoder
         )
 
@@ -153,7 +153,7 @@ class JWTManager:
             fresh=fresh,
             user_claims=user_claims,
             identity_claim_key=config.JWT_IDENTITY_CLAIM,
-            user_claims_key=config.JWT_IDENTITY_CLAIM,
+            user_claims_key=config.JWT_USER_CLAIMS,
             json_encoder=app.json_encoder
         )
         return access_token

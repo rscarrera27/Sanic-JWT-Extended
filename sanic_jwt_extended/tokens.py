@@ -160,8 +160,15 @@ class Token:
         return self.data.get(self.app.config.JWT_IDENTITY_CLAIM, None)
 
     @property
-    def jwt_claims(self) -> Dict:
+    def jwt_user_claims(self) -> Dict:
         """
         :return: user claim data
         """
         return self.data.get(self.app.config.JWT_USER_CLAIMS, {})
+
+    @property
+    def jti(self) -> str:
+        """
+        :return: jti data
+        """
+        return self.data.get("jti", None)

@@ -52,7 +52,7 @@ class JWTManager:
 
         # Options for JWTs when the TOKEN_LOCATION is headers
         app.config.setdefault('JWT_HEADER_NAME', 'Authorization')
-        app.config.setdefault('JWT_HEADER_TYPE', 'JWT')
+        app.config.setdefault('JWT_HEADER_TYPE', 'Bearer')
 
         # How long an a token will live before they expire.
         app.config.setdefault('JWT_ACCESS_TOKEN_EXPIRES', datetime.timedelta(minutes=15))

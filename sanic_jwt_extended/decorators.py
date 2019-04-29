@@ -25,7 +25,7 @@ async def get_jwt_data(app: Sanic, token: str) -> Dict:
         algorithm=app.config.JWT_ALGORITHM,
         identity_claim_key=app.config.JWT_IDENTITY_CLAIM,
         user_claims_key=app.config.JWT_USER_CLAIMS
-        )
+    )
 
     return jwt_data
 
@@ -78,6 +78,17 @@ async def verify_jwt_data_type(token_data: dict, token_type: str) -> None:
         raise WrongTokenError('Only {} tokens are allowed'.format(token_type))
 
 
+def _get_request(*args):
+    """
+    Get request object from args.
+    """
+    if isinstance(args[0], Request):
+        request = args[0]
+    else:
+        request = args[1]
+    return request
+
+
 def jwt_required(fn):
     """
     A decorator to protect a Sanic endpoint.
@@ -89,7 +100,7 @@ def jwt_required(fn):
     """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
-        request = args[0]
+        request = _get_request(*args)
         app = request.app
         token = await get_jwt_data_in_request_header(app, request)
         await verify_jwt_data_type(token, "access")
@@ -111,7 +122,7 @@ def jwt_optional(fn):
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         token = {}
-        request = args[0]
+        request = _get_request(*args)
         app = request.app
 
         try:
@@ -135,7 +146,7 @@ def fresh_jwt_required(fn):
     """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
-        request = args[0]
+        request = _get_request(*args)
         app = request.app
 
         token = await get_jwt_data_in_request_header(app, request)
@@ -164,7 +175,7 @@ def jwt_refresh_token_required(fn):
     """
     @wraps(fn)
     async def wrapper(*args, **kwargs):
-        request = args[0]
+        request = _get_request(*args)
         app = request.app
 
         token = await get_jwt_data_in_request_header(app, request)

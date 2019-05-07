@@ -1,4 +1,5 @@
-# Sanic-JWT-Extended
+# Sanic-JWT-Extended 
+[![Downloads](https://pepy.tech/badge/sanic-jwt-extended)](https://pepy.tech/project/sanic-jwt-extended)
 
 ## What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is Sanic version of Flask-JWT-Extended. this is stable, 

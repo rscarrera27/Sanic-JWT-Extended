@@ -3,17 +3,25 @@ Sanic-JWT-Extended
 """
 import io
 import re
+import os
 from setuptools import setup
-
-from sanic_jwt_extended import __version__
 
 
 with open("README.md", "r") as f:
     long_description = f.read()
 
 
+with open(os.path.join("sanic_jwt_extended", "__init__.py"), "r") as f:
+    try:
+        version = re.findall(
+            r"^__version__ = \"([^']+)\"\r?$", f.read(), re.M
+        )[0]
+    except IndexError:
+        raise RuntimeError("Unable to determine version.")
+
+
 setup(name='Sanic-JWT-Extended',
-      version=__version__,
+      version=version,
       url='https://github.com/devArtoria/Sanic-JWT-Extended',
       license='MIT',
       author='Lewis "devArtoria" Kim',
@@ -30,13 +38,13 @@ setup(name='Sanic-JWT-Extended',
           'PyJWT',
       ],
       classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries :: Python Modules'
+          'Development Status :: 3 - Alpha',
+          'Environment :: Web Environment',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
+          'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+          'Topic :: Software Development :: Libraries :: Python Modules'
       ])

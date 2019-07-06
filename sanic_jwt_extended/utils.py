@@ -1,4 +1,6 @@
-async def create_access_token(app, identity, user_claims=None, role=None, fresh=False, expires_delta=None):
+async def create_access_token(
+    app, identity, user_claims=None, role=None, fresh=False, expires_delta=None
+):
     """
     Create a new access token.
 
@@ -19,7 +21,9 @@ async def create_access_token(app, identity, user_claims=None, role=None, fresh=
                           'JWT_ACCESS_TOKEN_EXPIRES` config value
     :return: An encoded access token
     """
-    return await app.jwt._create_access_token(app, identity, user_claims, role, fresh, expires_delta)
+    return await app.jwt._create_access_token(
+        app, identity, user_claims, role, fresh, expires_delta
+    )
 
 
 async def create_refresh_token(app, identity, user_claims=None, expires_delta=None):
@@ -37,4 +41,6 @@ async def create_refresh_token(app, identity, user_claims=None, expires_delta=No
                           'JWT_REFRESH_TOKEN_EXPIRES` config value
     :return: An encoded access token
     """
-    return await app.jwt._create_refresh_token(app, identity, user_claims, expires_delta)
+    return await app.jwt._create_refresh_token(
+        app, identity, user_claims, expires_delta
+    )

@@ -6,8 +6,14 @@ from typing import Dict, List
 from sanic import Sanic
 from sanic.request import Request
 
-from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError, FreshTokenRequired, \
-    ConfigurationConflictError, AccessDenied
+from sanic_jwt_extended.exceptions import (
+    WrongTokenError,
+    NoAuthorizationError,
+    InvalidHeaderError,
+    FreshTokenRequired,
+    ConfigurationConflictError,
+    AccessDenied,
+)
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
 
@@ -25,7 +31,7 @@ async def get_jwt_data(app: Sanic, token: str) -> Dict:
         secret=app.config.JWT_SECRET_KEY,
         algorithm=app.config.JWT_ALGORITHM,
         identity_claim_key=app.config.JWT_IDENTITY_CLAIM,
-        user_claims_key=app.config.JWT_USER_CLAIMS
+        user_claims_key=app.config.JWT_USER_CLAIMS,
     )
 
     return jwt_data
@@ -58,8 +64,7 @@ async def get_jwt_data_in_request_header(app: Sanic, request: Request) -> Dict:
     else:
         if parts[0] != header_type or len(parts) != 2:
             msg = "Bad {} header. Expected value '{} <JWT>'".format(
-                header_name,
-                header_type
+                header_name, header_type
             )
             raise InvalidHeaderError(msg)
         token: str = parts[1]
@@ -76,14 +81,14 @@ async def verify_jwt_data_type(token_data: dict, token_type: str) -> None:
     :param token_type: Token type that want to check (ex: access)
     """
     if token_data["type"] != token_type:
-        raise WrongTokenError('Only {} tokens are allowed'.format(token_type))
+        raise WrongTokenError("Only {} tokens are allowed".format(token_type))
 
 
 def access_control(role=None, allow=None, deny=None):
     accessible = (role in (allow if allow else deny)) == (True if allow else False)
 
     if not accessible:
-        raise AccessDenied('role {0} is not allowed to access'.format(role))
+        raise AccessDenied("role {0} is not allowed to access".format(role))
 
 
 def _get_request(*args):
@@ -127,13 +132,16 @@ def jwt_required(function=None, allow=None, deny=None):
             kwargs["token"] = Token(app, token)
 
             return await fn(*args, **kwargs)
+
         return wrapper
 
     if function:
         return actual_jwt_required(function)
     else:
         if allow and deny:
-            raise ConfigurationConflictError("Can not use 'deny' and 'allow' option together.")
+            raise ConfigurationConflictError(
+                "Can not use 'deny' and 'allow' option together."
+            )
         return actual_jwt_required
 
 
@@ -146,6 +154,7 @@ def jwt_optional(fn):
     etc), this will still call the appropriate error handler instead of allowing
     the endpoint to be called as if there is no access token in the request.
     """
+
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         token = {}
@@ -160,6 +169,7 @@ def jwt_optional(fn):
 
         kwargs["token"] = Token(app, token)
         return await fn(*args, **kwargs)
+
     return wrapper
 
 
@@ -171,6 +181,7 @@ def fresh_jwt_required(function=None, allow=None, deny=None):
     called.
     See also: :func:`~sanic_jwt_extended.jwt_required`
     """
+
     def actual_fresh_jwt_required(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
@@ -183,11 +194,11 @@ def fresh_jwt_required(function=None, allow=None, deny=None):
 
             if isinstance(fresh, bool):
                 if not fresh:
-                    raise FreshTokenRequired('Fresh token required')
+                    raise FreshTokenRequired("Fresh token required")
             else:
                 now = timegm(datetime.utcnow().utctimetuple())
                 if fresh < now:
-                    raise FreshTokenRequired('Fresh token required')
+                    raise FreshTokenRequired("Fresh token required")
 
             try:
                 if allow:
@@ -200,13 +211,16 @@ def fresh_jwt_required(function=None, allow=None, deny=None):
             kwargs["token"] = Token(app, token)
 
             return await fn(*args, **kwargs)
+
         return wrapper
 
     if function:
         return actual_fresh_jwt_required(function)
     else:
         if allow and deny:
-            raise ConfigurationConflictError("Can not use 'deny' and 'allow' option together.")
+            raise ConfigurationConflictError(
+                "Can not use 'deny' and 'allow' option together."
+            )
         return actual_fresh_jwt_required
 
 
@@ -216,6 +230,7 @@ def jwt_refresh_token_required(fn):
     If you decorate an endpoint with this, it will ensure that the requester
     has a valid refresh token before allowing the endpoint to be called.
     """
+
     @wraps(fn)
     async def wrapper(*args, **kwargs):
         request = _get_request(*args)
@@ -227,4 +242,5 @@ def jwt_refresh_token_required(fn):
         kwargs["token"] = Token(app, token)
 
         return await fn(*args, **kwargs)
+
     return wrapper

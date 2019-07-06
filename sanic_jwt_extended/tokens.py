@@ -10,29 +10,39 @@ from sanic_jwt_extended.exceptions import JWTDecodeError
 from sanic import Sanic
 
 
-def _encode_jwt(additional_token_data: dict, expires_delta: datetime.timedelta, secret: str, algorithm: str,
-                json_encoder: Callable[..., str]) -> str:
+def _encode_jwt(
+    additional_token_data: dict,
+    expires_delta: datetime.timedelta,
+    secret: str,
+    algorithm: str,
+    json_encoder: Callable[..., str],
+) -> str:
     uid = str(uuid.uuid4())
     now = datetime.datetime.utcnow()
-    token_data = {
-        'iat': now,
-        'nbf': now,
-        'jti': uid,
-    }
+    token_data = {"iat": now, "nbf": now, "jti": uid}
     # If expires_delta is False, the JWT should never expire
     # and the 'exp' claim is not set.
     if expires_delta:
-        token_data['exp'] = now + expires_delta
+        token_data["exp"] = now + expires_delta
     token_data.update(additional_token_data)
-    encoded_token = jwt.encode(token_data, secret, algorithm,
-                               json_encoder=json_encoder).decode('utf-8')
+    encoded_token = jwt.encode(
+        token_data, secret, algorithm, json_encoder=json_encoder
+    ).decode("utf-8")
     return encoded_token
 
 
-async def encode_access_token(identity: str, secret: str, algorithm: str, expires_delta: datetime.timedelta,
-                              fresh: Union[datetime.timedelta, bool],
-                              user_claims: dict, role: str, identity_claim_key: str, user_claims_key: str,
-                              json_encoder: Callable[..., str] = None) -> str:
+async def encode_access_token(
+    identity: str,
+    secret: str,
+    algorithm: str,
+    expires_delta: datetime.timedelta,
+    fresh: Union[datetime.timedelta, bool],
+    user_claims: dict,
+    role: str,
+    identity_claim_key: str,
+    user_claims_key: str,
+    json_encoder: Callable[..., str] = None,
+) -> str:
     """
     Creates a new encoded (utf-8) access token.
     :param identity: Identifier for who this token is for (ex, username). This
@@ -57,11 +67,7 @@ async def encode_access_token(identity: str, secret: str, algorithm: str, expire
         now = datetime.datetime.utcnow()
         fresh = timegm((now + fresh).utctimetuple())
 
-    token_data = {
-        identity_claim_key: identity,
-        'fresh': fresh,
-        'type': 'access',
-    }
+    token_data = {identity_claim_key: identity, "fresh": fresh, "type": "access"}
 
     # Don't add extra data to the token if user_claims is empty.
     if user_claims:
@@ -70,13 +76,21 @@ async def encode_access_token(identity: str, secret: str, algorithm: str, expire
     if role:
         token_data["role"] = role
 
-    return _encode_jwt(token_data, expires_delta, secret, algorithm,
-                       json_encoder=json_encoder)
+    return _encode_jwt(
+        token_data, expires_delta, secret, algorithm, json_encoder=json_encoder
+    )
 
 
-async def encode_refresh_token(identity, secret, algorithm, expires_delta, user_claims,
-                               identity_claim_key, user_claims_key,
-                               json_encoder=None):
+async def encode_refresh_token(
+    identity,
+    secret,
+    algorithm,
+    expires_delta,
+    user_claims,
+    identity_claim_key,
+    user_claims_key,
+    json_encoder=None,
+):
     """
     Creates a new encoded (utf-8) refresh token.
 
@@ -93,21 +107,24 @@ async def encode_refresh_token(identity, secret, algorithm, expires_delta, user_
     :param json_encoder: json encoder
     :return: Encoded refresh token
     """
-    token_data = {
-        identity_claim_key: identity,
-        'type': 'refresh',
-    }
+    token_data = {identity_claim_key: identity, "type": "refresh"}
 
     # Don't add extra data to the token if user_claims is empty.
     if user_claims:
         token_data[user_claims_key] = user_claims
 
-    return _encode_jwt(token_data, expires_delta, secret, algorithm,
-                       json_encoder=json_encoder)
+    return _encode_jwt(
+        token_data, expires_delta, secret, algorithm, json_encoder=json_encoder
+    )
 
 
-async def decode_jwt(encoded_token: str, secret: str, algorithm: str, identity_claim_key: str,
-                     user_claims_key: str) -> Dict:
+async def decode_jwt(
+    encoded_token: str,
+    secret: str,
+    algorithm: str,
+    identity_claim_key: str,
+    user_claims_key: str,
+) -> Dict:
     """
     Decodes an encoded JWT
 
@@ -122,14 +139,14 @@ async def decode_jwt(encoded_token: str, secret: str, algorithm: str, identity_c
     data: dict = jwt.decode(encoded_token, secret, algorithms=[algorithm])
 
     # Make sure that any custom claims we expect in the token are present
-    if 'jti' not in data:
+    if "jti" not in data:
         raise JWTDecodeError("Missing claim: jti")
     if identity_claim_key not in data:
         raise JWTDecodeError("Missing claim: {}".format(identity_claim_key))
-    if 'type' not in data or data['type'] not in ('refresh', 'access'):
+    if "type" not in data or data["type"] not in ("refresh", "access"):
         raise JWTDecodeError("Missing or invalid claim: type")
-    if data['type'] == 'access':
-        if 'fresh' not in data:
+    if data["type"] == "access":
+        if "fresh" not in data:
             raise JWTDecodeError("Missing claim: fresh")
     if user_claims_key not in data:
         data[user_claims_key] = {}
@@ -141,6 +158,7 @@ class Token:
     """
     Token object that contains decoded token data and passed with kwargs to endpoint function
     """
+
     data: dict
     app: Sanic
 

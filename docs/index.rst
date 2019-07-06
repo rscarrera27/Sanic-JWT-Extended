@@ -15,6 +15,7 @@ Contents:
    basic_usage
    user_claims
    options
+   rbac
    api
 
 

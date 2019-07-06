@@ -29,7 +29,7 @@ General Options:
                                   for the options. Defaults to ``'HS256'``.
 ``JWT_SECRET_KEY``                The secret key needed for symmetric based signing algorithms,
                                   such as ``HS*``. If this is not set, we use the
-                                  flask ``SECRET_KEY`` value instead.
+                                  sanic ``SECRET_KEY`` value instead.
 ``JWT_IDENTITY_CLAIM``            Claim in the tokens that is used as source of identity.
                                   For interoperability, the JWT RFC recommends using ``'sub'``.
                                   Defaults to ``'identity'`` for legacy reasons.
@@ -40,6 +40,8 @@ General Options:
 ``JWT_ERROR_MESSAGE_KEY``         The key of the error message in a JSON error response when using
                                   the default error handlers.
                                   Defaults to ``'msg'``.
+``RBAC_ENABLE``                   Role-based access control (RBAC) enable option.
+                                  Defaults to ``False``
 ================================= =========================================
 
 

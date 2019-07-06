@@ -7,7 +7,7 @@ the :func:`~sanic_jwt_extended.jwt_required` decorator to protect endpoints,
 and :py:attr:`~sanic_jwt_extended.Token.jwt_identity` in the given token argument to get the identity
 of a JWT in a protected endpoint.
 
-.. literalinclude:: ../examples/basic_usage.py
+.. literalinclude:: ../examples/basic.py
 
 To access a jwt_required protected view, all we have to do is send in the
 JWT with the request. By default, this is done with an authorization header

@@ -1,9 +1,12 @@
 # Sanic-JWT-Extended 
 [![Downloads](https://pepy.tech/badge/sanic-jwt-extended)](https://pepy.tech/project/sanic-jwt-extended)
+![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
+![code style](https://img.shields.io/badge/code%20style-black-black.svg)
+[![Documentation Status](https://readthedocs.org/projects/sanic-jwt-extended/badge/?version=latest)](https://sanic-jwt-extended.readthedocs.io/en/latest/?badge=latest)
 
 ## What is Sanic-JWT-Extended?
-Sanic-JWT-Extended is Sanic version of Flask-JWT-Extended. this is stable, 
-but some features of Flask-JWT-Extended is not implemented yet. so this currently WIP.
+Sanic-JWT-Extended is port of Flask-JWT-Extended for Sanic.
 
 ## When to use Flask-JWT-Extended?
 Sanic-JWT-Extended not only adds support for using JSON Web Tokens (JWT) to Sanic for protecting views,
@@ -14,6 +17,7 @@ easier. These include:
 * [Refresh tokens](https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/)
 * Token freshness and separate view decorators to only allow fresh tokens
 * Role-based access control
+* ~~built-in blacklist support~~ <= WIP
 
 ## Installation
 ```bash

@@ -47,3 +47,14 @@ class FreshTokenRequired(JWTExtendedException):
     protected by fresh_jwt_required
     """
     pass
+
+
+class AccessDenied(JWTExtendedException):
+    pass
+
+
+class ConfigurationConflictError(JWTExtendedException):
+    """
+    Error raised when trying to use allow and deny option together in jwt_required
+    """
+    pass

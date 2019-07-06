@@ -8,8 +8,8 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 
 from sanic_jwt_extended.exceptions import (
     JWTDecodeError, NoAuthorizationError, InvalidHeaderError, WrongTokenError,
-    RevokedTokenError, FreshTokenRequired
-)
+    RevokedTokenError, FreshTokenRequired,
+    ConfigurationConflictError, AccessDenied)
 from sanic_jwt_extended.tokens import (
     encode_refresh_token, encode_access_token
 )
@@ -74,6 +74,8 @@ class JWTManager:
 
         app.config.setdefault('JWT_ERROR_MESSAGE_KEY', 'msg')
 
+        app.config.setdefault("RBAC_ENABLED", False)
+
         app.json_encoder = JSONEncoder
 
     @staticmethod
@@ -113,6 +115,10 @@ class JWTManager:
         async def handle_fresh_token_required(request, e):
             return json({app.config.JWT_ERROR_MESSAGE_KEY: "Fresh token required"}, status=422)
 
+        @app.exception(AccessDenied)
+        async def handle_access_denied(request, e):
+            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=401)
+
     @staticmethod
     async def _create_refresh_token(app: Sanic, identity, user_claims, expires_delta=None):
         config = app.config
@@ -139,11 +145,14 @@ class JWTManager:
         return refresh_token
 
     @staticmethod
-    async def _create_access_token(app: Sanic, identity, user_claims, fresh, expires_delta=None):
+    async def _create_access_token(app: Sanic, identity, user_claims, role, fresh, expires_delta=None):
         config = app.config
 
         if expires_delta is None:
             expires_delta = config.JWT_ACCESS_TOKEN_EXPIRES
+
+        if role and not config.RBAC_ENABLE:
+            raise ConfigurationConflictError("RBAC is not enabled!")
 
         access_token = await encode_access_token(
             identity=identity,
@@ -152,6 +161,7 @@ class JWTManager:
             expires_delta=expires_delta,
             fresh=fresh,
             user_claims=user_claims,
+            role=role,
             identity_claim_key=config.JWT_IDENTITY_CLAIM,
             user_claims_key=config.JWT_USER_CLAIMS,
             json_encoder=app.json_encoder

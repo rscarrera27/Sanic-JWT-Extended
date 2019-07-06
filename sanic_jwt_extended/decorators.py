@@ -6,7 +6,8 @@ from typing import Dict, List
 from sanic import Sanic
 from sanic.request import Request
 
-from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError, FreshTokenRequired
+from sanic_jwt_extended.exceptions import WrongTokenError, NoAuthorizationError, InvalidHeaderError, FreshTokenRequired, \
+    ConfigurationConflictError, AccessDenied
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
 
@@ -78,6 +79,13 @@ async def verify_jwt_data_type(token_data: dict, token_type: str) -> None:
         raise WrongTokenError('Only {} tokens are allowed'.format(token_type))
 
 
+def access_control(role=None, allow=None, deny=None):
+    accessible = (role in (allow if allow else deny)) == (True if allow else False)
+
+    if not accessible:
+        raise AccessDenied('role {0} is not allowed to access'.format(role))
+
+
 def _get_request(*args):
     """
     Get request object from args.
@@ -89,7 +97,7 @@ def _get_request(*args):
     return request
 
 
-def jwt_required(fn):
+def jwt_required(function=None, allow=None, deny=None):
     """
     A decorator to protect a Sanic endpoint.
     If you decorate an endpoint with this, it will ensure that the requester
@@ -98,16 +106,35 @@ def jwt_required(fn):
     This does not check the freshness of the access token.
     See also: :func:`~sanic_jwt_extended.fresh_jwt_required`
     """
-    @wraps(fn)
-    async def wrapper(*args, **kwargs):
-        request = _get_request(*args)
-        app = request.app
-        token = await get_jwt_data_in_request_header(app, request)
-        await verify_jwt_data_type(token, "access")
-        kwargs["token"] = Token(app, token)
 
-        return await fn(*args, **kwargs)
-    return wrapper
+    def actual_jwt_required(fn):
+        @wraps(fn)
+        async def wrapper(*args, **kwargs):
+            request = _get_request(*args)
+            app = request.app
+
+            token = await get_jwt_data_in_request_header(app, request)
+            await verify_jwt_data_type(token, "access")
+
+            try:
+                if allow:
+                    access_control(token["role"], allow=allow)
+                elif deny:
+                    access_control(token["role"], deny=deny)
+            except KeyError:
+                raise ConfigurationConflictError("Please enable RBAC")
+
+            kwargs["token"] = Token(app, token)
+
+            return await fn(*args, **kwargs)
+        return wrapper
+
+    if function:
+        return actual_jwt_required(function)
+    else:
+        if allow and deny:
+            raise ConfigurationConflictError("Can not use 'deny' and 'allow' option together.")
+        return actual_jwt_required
 
 
 def jwt_optional(fn):
@@ -136,7 +163,7 @@ def jwt_optional(fn):
     return wrapper
 
 
-def fresh_jwt_required(fn):
+def fresh_jwt_required(function=None, allow=None, deny=None):
     """
     A decorator to protect a Sanic endpoint.
     If you decorate an endpoint with this, it will ensure that the requester
@@ -144,27 +171,43 @@ def fresh_jwt_required(fn):
     called.
     See also: :func:`~sanic_jwt_extended.jwt_required`
     """
-    @wraps(fn)
-    async def wrapper(*args, **kwargs):
-        request = _get_request(*args)
-        app = request.app
+    def actual_fresh_jwt_required(fn):
+        @wraps(fn)
+        async def wrapper(*args, **kwargs):
+            request = _get_request(*args)
+            app = request.app
 
-        token = await get_jwt_data_in_request_header(app, request)
-        await verify_jwt_data_type(token, "access")
-        fresh = token["fresh"]
+            token = await get_jwt_data_in_request_header(app, request)
+            await verify_jwt_data_type(token, "access")
+            fresh = token["fresh"]
 
-        if isinstance(fresh, bool):
-            if not fresh:
-                raise FreshTokenRequired('Fresh token required')
-        else:
-            now = timegm(datetime.utcnow().utctimetuple())
-            if fresh < now:
-                raise FreshTokenRequired('Fresh token required')
+            if isinstance(fresh, bool):
+                if not fresh:
+                    raise FreshTokenRequired('Fresh token required')
+            else:
+                now = timegm(datetime.utcnow().utctimetuple())
+                if fresh < now:
+                    raise FreshTokenRequired('Fresh token required')
 
-        kwargs["token"] = Token(app, token)
+            try:
+                if allow:
+                    access_control(token["role"], allow=allow)
+                elif deny:
+                    access_control(token["role"], deny=deny)
+            except KeyError:
+                raise ConfigurationConflictError("Please enable RBAC")
 
-        return await fn(*args, **kwargs)
-    return wrapper
+            kwargs["token"] = Token(app, token)
+
+            return await fn(*args, **kwargs)
+        return wrapper
+
+    if function:
+        return actual_fresh_jwt_required(function)
+    else:
+        if allow and deny:
+            raise ConfigurationConflictError("Can not use 'deny' and 'allow' option together.")
+        return actual_fresh_jwt_required
 
 
 def jwt_refresh_token_required(fn):

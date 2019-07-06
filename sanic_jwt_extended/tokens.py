@@ -31,7 +31,7 @@ def _encode_jwt(additional_token_data: dict, expires_delta: datetime.timedelta, 
 
 async def encode_access_token(identity: str, secret: str, algorithm: str, expires_delta: datetime.timedelta,
                               fresh: Union[datetime.timedelta, bool],
-                              user_claims: dict, identity_claim_key: str, user_claims_key: str,
+                              user_claims: dict, role: str, identity_claim_key: str, user_claims_key: str,
                               json_encoder: Callable[..., str] = None) -> str:
     """
     Creates a new encoded (utf-8) access token.
@@ -47,6 +47,7 @@ async def encode_access_token(identity: str, secret: str, algorithm: str, expire
                   token will remain fresh.
     :param user_claims: Custom claims to include in this token. This data must
                         be json serializable
+    :param role: A role field for RBAC
     :param identity_claim_key: Which key should be used to store the identity
     :param user_claims_key: Which key should be used to store the user claims
     :param json_encoder: json encoder
@@ -65,6 +66,9 @@ async def encode_access_token(identity: str, secret: str, algorithm: str, expire
     # Don't add extra data to the token if user_claims is empty.
     if user_claims:
         token_data[user_claims_key] = user_claims
+
+    if role:
+        token_data["role"] = role
 
     return _encode_jwt(token_data, expires_delta, secret, algorithm,
                        json_encoder=json_encoder)

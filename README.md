@@ -8,7 +8,7 @@
 ## What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is port of Flask-JWT-Extended for Sanic.
 
-## When to use Flask-JWT-Extended?
+## When to use Sanic-JWT-Extended?
 Sanic-JWT-Extended not only adds support for using JSON Web Tokens (JWT) to Sanic for protecting views,
 but also many helpful (and **optional**) features  built in to make working with JSON Web Tokens
 easier. These include:

@@ -6,6 +6,7 @@ from sanic.response import json
 
 from jwt import ExpiredSignatureError, InvalidTokenError
 
+from sanic_jwt_extended.blacklists import Blacklist
 from sanic_jwt_extended.exceptions import (
     JWTDecodeError,
     NoAuthorizationError,
@@ -28,13 +29,16 @@ class JWTManager:
     to your app in a factory function.
     """
 
-    def __init__(self, app: Sanic):
+    def __init__(self, app: Sanic, blacklist=None):
         """
         Create the JWTManager instance. You can either pass a sanic application in directly
         here to register this extension with the sanic app, or you can call init_app after creating
         this object (in a factory pattern).
         :param app: A sanic application
         """
+        if blacklist is not None and issubclass(type(blacklist), Blacklist):
+            self.blacklist = blacklist
+
         if app is not None:
             self.init_app(app=app)
 

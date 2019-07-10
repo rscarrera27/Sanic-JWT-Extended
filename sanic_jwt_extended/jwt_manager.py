@@ -38,6 +38,8 @@ class JWTManager:
         """
         if blacklist is not None and issubclass(type(blacklist), Blacklist):
             self.blacklist = blacklist
+        else:
+            self.blacklist = None
 
         if app is not None:
             self.init_app(app=app)

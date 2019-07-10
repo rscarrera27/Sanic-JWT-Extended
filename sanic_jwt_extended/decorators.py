@@ -13,6 +13,7 @@ from sanic_jwt_extended.exceptions import (
     FreshTokenRequired,
     ConfigurationConflictError,
     AccessDenied,
+    RevokedTokenError
 )
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
@@ -130,6 +131,9 @@ def jwt_required(function=None, allow=None, deny=None):
                 raise ConfigurationConflictError("Please enable RBAC")
 
             kwargs["token"] = Token(app, token)
+
+            if app.jwt.blacklist is not None and not app.jwt.blacklist.check_token(token["jti"]):
+                raise RevokedTokenError("Your token have been blacklisted")
 
             return await fn(*args, **kwargs)
 

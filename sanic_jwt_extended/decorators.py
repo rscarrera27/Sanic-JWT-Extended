@@ -13,7 +13,7 @@ from sanic_jwt_extended.exceptions import (
     FreshTokenRequired,
     ConfigurationConflictError,
     AccessDenied,
-    RevokedTokenError
+    RevokedTokenError,
 )
 from sanic_jwt_extended.tokens import decode_jwt, Token
 
@@ -103,7 +103,7 @@ def _get_request(*args):
     return request
 
 
-def jwt_required(function=None, allow=None, deny=None):
+def jwt_required(function=None, allow=None, deny=None, check_if_blacklisted=False):
     """
     A decorator to protect a Sanic endpoint.
     If you decorate an endpoint with this, it will ensure that the requester
@@ -132,7 +132,11 @@ def jwt_required(function=None, allow=None, deny=None):
 
             kwargs["token"] = Token(app, token)
 
-            if app.jwt.blacklist is not None and not app.jwt.blacklist.check_token(token["jti"]):
+            if (
+                check_if_blacklisted
+                and app.jwt.blacklist is not None
+                and await app.jwt.blacklist.is_token_banned(token["jti"])
+            ):
                 raise RevokedTokenError("Your token have been blacklisted")
 
             return await fn(*args, **kwargs)

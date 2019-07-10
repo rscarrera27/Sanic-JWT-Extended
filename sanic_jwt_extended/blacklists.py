@@ -25,7 +25,7 @@ class Blacklist(abc.ABC):
         """
         pass
 
-    async def check_token(self, jwt_id: str) -> bool:
+    async def is_token_banned(self, jwt_id: str) -> bool:
         """
         Checks if the token is not banned at the moment.
         MUST not throw any exceptions.
@@ -34,6 +34,7 @@ class Blacklist(abc.ABC):
         """
         return (
             await self.get_variable(jwt_id) == "true"
+            and await self.get_variable(jwt_id + "_date") is not None
             and datetime.fromisoformat(await self.get_variable(jwt_id + "_date"))
             > datetime.now()
         )
@@ -49,6 +50,14 @@ class Blacklist(abc.ABC):
         await self.set_variable(
             jwt_id + "_date", (datetime.now() + blacklist_for).isoformat()
         )
+
+    async def unblacklist_token(self, jwt_id: str):
+        """
+        Unblacklists token
+        :param jwt_id: Some kind of id that's
+        unique to the token. For example jti (https://tools.ietf.org/html/rfc7519#section-4.1.7)
+        """
+        await self.set_variable(jwt_id, "false")
 
 
 class InMemoryBlacklist(Blacklist):

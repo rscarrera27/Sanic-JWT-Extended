@@ -17,7 +17,7 @@ easier. These include:
 * [Refresh tokens](https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/)
 * Token freshness and separate view decorators to only allow fresh tokens
 * Role-based access control
-* ~~built-in blacklist support~~ <= WIP
+* built-in blacklist support
 
 ## Installation
 ```bash

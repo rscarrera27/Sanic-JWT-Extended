@@ -30,6 +30,10 @@ General Options:
 ``JWT_SECRET_KEY``                The secret key needed for symmetric based signing algorithms,
                                   such as ``HS*``. If this is not set, we use the
                                   sanic ``SECRET_KEY`` value instead.
+``JWT_PUBLIC_KEY``                The public key needed for asymmetric based signing algorithms,
+                                  such as RS* or ES*. PEM format expected.
+``JWT_PRIVATE_KEY``               The private key needed for asymmetric based signing algorithms,
+                                  such as RS* or ES*. PEM format expected.
 ``JWT_IDENTITY_CLAIM``            Claim in the tokens that is used as source of identity.
                                   For interoperability, the JWT RFC recommends using ``'sub'``.
                                   Defaults to ``'identity'`` for legacy reasons.

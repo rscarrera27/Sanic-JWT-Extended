@@ -74,6 +74,12 @@ class JWTManager:
         # if this is not set.
         app.config.setdefault("JWT_SECRET_KEY", None)
 
+        # The public key needed for asymmetric based signing algorithms.
+        app.config.setdefault("JWT_PUBLIC_KEY", None)
+
+        # The private key needed for asymmetric based signing algorithms.
+        app.config.setdefault("JWT_PRIVATE_KEY", None)
+
         app.config.setdefault("JWT_IDENTITY_CLAIM", "identity")
         app.config.setdefault("JWT_USER_CLAIMS", "user_claims")
 
@@ -147,9 +153,11 @@ class JWTManager:
         else:
             user_claims = None
 
+        secret = app.config.JWT_SECRET_KEY if app.config.JWT_ALGORITHM.startswith('HS') else app.config.JWT_PRIVATE_KEY
+
         refresh_token = await encode_refresh_token(
             identity=identity,
-            secret=config.JWT_SECRET_KEY,
+            secret=secret,
             algorithm=config.JWT_ALGORITHM,
             expires_delta=expires_delta,
             user_claims=user_claims,
@@ -172,9 +180,11 @@ class JWTManager:
         if role and not config.RBAC_ENABLE:
             raise ConfigurationConflictError("RBAC is not enabled!")
 
+        secret = app.config.JWT_SECRET_KEY if app.config.JWT_ALGORITHM.startswith('HS') else app.config.JWT_PRIVATE_KEY
+
         access_token = await encode_access_token(
             identity=identity,
-            secret=config.JWT_SECRET_KEY,
+            secret=secret,
             algorithm=config.JWT_ALGORITHM,
             expires_delta=expires_delta,
             fresh=fresh,

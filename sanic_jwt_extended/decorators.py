@@ -25,10 +25,11 @@ async def get_jwt_data(app: Sanic, token: str) -> Dict:
     :param token: Encoded JWT string to decode
     :return: Dictionary containing contents of the JWT
     """
+    secret = app.config.JWT_SECRET_KEY if app.config.JWT_ALGORITHM.startswith('HS') else app.config.JWT_PUBLIC_KEY
 
     jwt_data: dict = await decode_jwt(
         encoded_token=token,
-        secret=app.config.JWT_SECRET_KEY,
+        secret=secret,
         algorithm=app.config.JWT_ALGORITHM,
         identity_claim_key=app.config.JWT_IDENTITY_CLAIM,
         user_claims_key=app.config.JWT_USER_CLAIMS,

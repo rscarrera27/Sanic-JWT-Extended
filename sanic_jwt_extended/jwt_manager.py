@@ -22,7 +22,7 @@ from sanic_jwt_extended.tokens import encode_refresh_token, encode_access_token
 class JWTManager:
     """
     An object used to hold JWT settings for the
-    Sanic-GraphQL-Auth extension.
+    Sanic-JWT-Extended extension.
     Instances of :class:`JWTManger` are *not* bound to specific apps, so
     you can create one in the main body of your code and then bind it
     to your app in a factory function.

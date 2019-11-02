@@ -22,10 +22,10 @@ with open(os.path.join("sanic_jwt_extended", "__init__.py"), "r") as f:
 
 setup(name='Sanic-JWT-Extended',
       version=version,
-      url='https://github.com/devArtoria/Sanic-JWT-Extended',
+      url='https://github.com/NovemberOscar/Sanic-JWT-Extended',
       license='MIT',
-      author='Lewis "devArtoria" Kim',
-      author_email='artoria@artoria.us',
+      author='Seonghyeon Kim',
+      author_email='kim@seonghyeon.dev',
       description='Extended JWT integration with Sanic',
       long_description=long_description,
       long_description_content_type="text/markdown",

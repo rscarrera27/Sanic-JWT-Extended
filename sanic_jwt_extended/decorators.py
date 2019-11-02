@@ -153,7 +153,7 @@ def jwt_optional(fn):
     If no access token is present in the request, this will insert Empty Token object to kwargs
     If there is an invalid access token in the request (expired, tampered with,
     etc), this will still call the appropriate error handler instead of allowing
-    the endpoint to be called as if there is no access token in the request.
+    the endpoint to be called as if there is no access token in the request. and also does not check role
     """
 
     @wraps(fn)

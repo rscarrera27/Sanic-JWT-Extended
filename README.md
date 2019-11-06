@@ -1,4 +1,4 @@
-# Sanic-JWT-Extended 
+# Sanic-JWT-Extended (NOW PREPARING 1.0 RELEASE WITH MAJOR CHANGES)
 [![Downloads](https://pepy.tech/badge/sanic-jwt-extended)](https://pepy.tech/project/sanic-jwt-extended)
 ![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)

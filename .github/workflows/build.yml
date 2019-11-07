@@ -27,8 +27,8 @@ jobs:
     - name: Lint
       run: |
         source $HOME/.poetry/env
-        make check
+        poetry run make check
     - name: Test
       run: |
         source $HOME/.poetry/env
-        pytest
+        poetry run pytest

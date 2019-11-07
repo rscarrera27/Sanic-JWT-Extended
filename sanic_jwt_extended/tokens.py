@@ -1,13 +1,12 @@
 import datetime
 import uuid
-
 from calendar import timegm
-from typing import Union, Dict, Callable
+from typing import Callable, Dict, Union
 
 import jwt
+from sanic import Sanic
 
 from sanic_jwt_extended.exceptions import JWTDecodeError
-from sanic import Sanic
 
 
 def _encode_jwt(

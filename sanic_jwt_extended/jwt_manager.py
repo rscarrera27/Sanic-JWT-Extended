@@ -1,22 +1,21 @@
 import datetime
 from json import JSONEncoder
 
+from jwt import ExpiredSignatureError, InvalidTokenError
 from sanic import Sanic
 from sanic.response import json
 
-from jwt import ExpiredSignatureError, InvalidTokenError
-
 from sanic_jwt_extended.exceptions import (
+    AccessDenied,
+    ConfigurationConflictError,
+    FreshTokenRequired,
+    InvalidHeaderError,
     JWTDecodeError,
     NoAuthorizationError,
-    InvalidHeaderError,
-    WrongTokenError,
     RevokedTokenError,
-    FreshTokenRequired,
-    ConfigurationConflictError,
-    AccessDenied,
+    WrongTokenError,
 )
-from sanic_jwt_extended.tokens import encode_refresh_token, encode_access_token
+from sanic_jwt_extended.tokens import encode_access_token, encode_refresh_token
 
 
 class JWTManager:
@@ -153,7 +152,11 @@ class JWTManager:
         else:
             user_claims = None
 
-        secret = app.config.JWT_SECRET_KEY if app.config.JWT_ALGORITHM.startswith('HS') else app.config.JWT_PRIVATE_KEY
+        secret = (
+            app.config.JWT_SECRET_KEY
+            if app.config.JWT_ALGORITHM.startswith("HS")
+            else app.config.JWT_PRIVATE_KEY
+        )
 
         refresh_token = await encode_refresh_token(
             identity=identity,
@@ -180,7 +183,11 @@ class JWTManager:
         if role and not config.RBAC_ENABLE:
             raise ConfigurationConflictError("RBAC is not enabled!")
 
-        secret = app.config.JWT_SECRET_KEY if app.config.JWT_ALGORITHM.startswith('HS') else app.config.JWT_PRIVATE_KEY
+        secret = (
+            app.config.JWT_SECRET_KEY
+            if app.config.JWT_ALGORITHM.startswith("HS")
+            else app.config.JWT_PRIVATE_KEY
+        )
 
         access_token = await encode_access_token(
             identity=identity,

@@ -16,13 +16,19 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install
-      uses: abatilo/actions-poetry@v1.0.0
-      with:
-        args: install
+    - name: Install Poetry
+      run: |
+        curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+        source $HOME/.poetry/env
+    - name: Install dependencies
+      run: |
+        source $HOME/.poetry/env
+        poetry install
     - name: Lint
       run: |
+        source $HOME/.poetry/env
         make check
     - name: Test
       run: |
+        source $HOME/.poetry/env
         pytest

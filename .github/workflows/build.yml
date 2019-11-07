@@ -24,10 +24,10 @@ jobs:
       run: |
         source $HOME/.poetry/env
         poetry install
-    - name: Lint
-      run: |
-        source $HOME/.poetry/env
-        poetry run make check
+#     - name: Lint
+#       run: |
+#         source $HOME/.poetry/env
+#         poetry run make check
     - name: Test
       run: |
         source $HOME/.poetry/env

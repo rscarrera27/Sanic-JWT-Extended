@@ -1,10 +1,10 @@
-from .jwt_manager import JWTManager
-from .utils import create_refresh_token, create_access_token
 from .decorators import (
-    jwt_required,
+    fresh_jwt_required,
     jwt_optional,
     jwt_refresh_token_required,
-    fresh_jwt_required,
+    jwt_required,
 )
+from .jwt_manager import JWTManager
+from .utils import create_access_token, create_refresh_token
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"

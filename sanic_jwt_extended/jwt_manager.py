@@ -51,6 +51,9 @@ class JWTManager:
         """
         Sets the default configuration options used by this extension
         """
+        # Encoder to serialize JSON into JWT
+        app.config.setdefault("JWT_JSON_ENCODER", JSONEncoder)
+
         # Where to look for the JWT. Available options are cookies or headers
         app.config.setdefault("JWT_TOKEN_LOCATION", ["headers"])
 
@@ -87,8 +90,6 @@ class JWTManager:
         app.config.setdefault("JWT_ERROR_MESSAGE_KEY", "msg")
 
         app.config.setdefault("RBAC_ENABLED", False)
-
-        app.json_encoder = JSONEncoder
 
     @staticmethod
     def _set_error_handlers(app: Sanic):
@@ -166,7 +167,7 @@ class JWTManager:
             user_claims=user_claims,
             identity_claim_key=config.JWT_IDENTITY_CLAIM,
             user_claims_key=config.JWT_USER_CLAIMS,
-            json_encoder=app.json_encoder,
+            json_encoder=config.JWT_JSON_ENCODER,
         )
 
         return refresh_token
@@ -199,6 +200,6 @@ class JWTManager:
             role=role,
             identity_claim_key=config.JWT_IDENTITY_CLAIM,
             user_claims_key=config.JWT_USER_CLAIMS,
-            json_encoder=app.json_encoder,
+            json_encoder=config.JWT_JSON_ENCODER,
         )
         return access_token

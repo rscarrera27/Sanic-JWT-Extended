@@ -7,4 +7,4 @@ from .decorators import (
 from .jwt_manager import JWTManager
 from .utils import create_access_token, create_refresh_token
 
-__version__ = "0.4.3"
+__version__ = "0.4.4"

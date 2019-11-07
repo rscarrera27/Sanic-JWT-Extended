@@ -44,7 +44,7 @@ class JWTManager:
         """
         self._set_error_handlers(app=app)
         self._set_default_configuration_options(app=app)
-        app.jwt = self
+        app.jwt_manager = self
 
     @staticmethod
     def _set_default_configuration_options(app):

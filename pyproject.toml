@@ -25,6 +25,7 @@ classifiers=[
 python = "^3.6"
 sanic = ">= 18.12.0"
 PyJWT = "^1.6.4"
+dataclasses = { version = "*", python = "3.6.*" }
 
 [tool.poetry.dev-dependencies]
 isort = "^4.3.20"

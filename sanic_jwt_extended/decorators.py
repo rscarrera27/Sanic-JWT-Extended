@@ -48,11 +48,11 @@ def _get_raw_jwt_from_request(request: Request) -> str:
     return raw_jwt
 
 
-def _get_raw_jwt_from_headers(request: Request) -> str:
+def _get_raw_jwt_from_headers(request):
     header_key = JWT.config.jwt_header_key
     header_prefix = JWT.config.jwt_header_prefix
 
-    token_header: str = request.headers.get(header_key)
+    token_header = request.headers.get(header_key)
 
     if not token_header:
         raise NoAuthorizationError(f"Missing {header_key} header")
@@ -69,20 +69,16 @@ def _get_raw_jwt_from_headers(request: Request) -> str:
     return encoded_token
 
 
-def _get_raw_jwt_from_query_params(request: Request) -> str:
+def _get_raw_jwt_from_query_params(request):
     pass
 
 
-def _get_raw_jwt_from_cookies(request: Request) -> str:
+def _get_raw_jwt_from_cookies(request):
     pass
 
 
 def jwt_required(
-    function: Callable = None,
-    *,
-    allow: List[str] = None,
-    deny: List[str] = None,
-    fresh_required: bool = False,
+    function=None, *, allow=None, deny=None, fresh_required=False,
 ):
     def real(fn):
         @wraps(fn)
@@ -120,7 +116,7 @@ def jwt_required(
         return real
 
 
-def jwt_optional(function: Callable):
+def jwt_optional(function):
     @wraps(function)
     async def wrapper(*args, **kwargs):
         request = _get_request(args)
@@ -143,9 +139,7 @@ def jwt_optional(function: Callable):
     return wrapper
 
 
-def refresh_jwt_required(
-    function: Callable = None, *, allow: List[str] = None, deny: List[str] = None
-):
+def refresh_jwt_required(function=None, *, allow=None, deny=None):
     def real(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):

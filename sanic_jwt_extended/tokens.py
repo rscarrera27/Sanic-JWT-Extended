@@ -1,0 +1,123 @@
+import datetime
+import json
+import uuid
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, Optional
+
+import jwt
+from flatten_dict import unflatten
+from jwt.utils import base64url_decode
+
+from sanic_jwt_extended.exceptions import JWTDecodeError
+from sanic_jwt_extended.jwt_manager import JWT
+
+
+@dataclass
+class Token:
+    raw_jwt: str
+    raw_data: Dict[str, Any] = field(init=False)
+
+    # Metadata
+    type: str = field(init=False)
+    role: Optional[str] = field(init=False, default=None)
+    fresh: Optional[bool] = field(init=False, default=None)
+
+    # Registered claims
+    iss: Optional[str] = field(init=False, default=None)
+    sub: str = field(init=False)
+    aud: Optional[str] = field(init=False, default=None)
+    exp: Optional[datetime.datetime] = field(init=False, default=None)
+    nbf: datetime.datetime = field(init=False)
+    iat: datetime.datetime = field(init=False)
+    jti: uuid.UUID = field(init=False)
+
+    # Additional claims
+    public_claims: Dict[str, Any] = field(init=False, default=None)
+    private_claims: Dict[str, Any] = field(init=False, default=None)
+
+    def __post_init__(self):
+        self.raw_data = self._decode_jwt()
+
+        self.type = self._get_type()
+        self.role = self.raw_data.get("role") if JWT.config.use_acl else None
+        self.fresh = self.raw_data.get("fresh") if self.type == "access" else None
+
+        try:
+            self.iss = self.raw_data.get("iss")
+            self.sub = self.raw_data["sub"]
+            self.aud = self.raw_data.get("aud")
+            exp = self.raw_data.get("exp")
+            nbf = self.raw_data["nbf"]
+            iat = self.raw_data["iat"]
+            jti = self.raw_data["jti"]
+        except KeyError as e:
+            raise JWTDecodeError(
+                f"Can not get registered claims from payload. missing {e}"
+            )
+
+        try:
+            self.jti = uuid.UUID(jti)
+        except Exception:
+            raise JWTDecodeError(f"Wrong jti")
+
+        try:
+            self.exp = datetime.datetime.utcfromtimestamp(exp) if exp else None
+            self.nbf = datetime.datetime.utcfromtimestamp(nbf)
+            self.iat = datetime.datetime.utcfromtimestamp(iat)
+        except Exception:
+            raise JWTDecodeError(f"Wrong timestamp for 'nbf' or/and 'iat'")
+
+        self.public_claims = self._get_public_claims()
+        self.private_claims = self._get_private_claims()
+
+    def _get_private_claims(self):
+        private_claims = {
+            k.replace(JWT.config.private_claim_prefix, ""): v
+            for k, v in self.raw_data.items()
+            if k.startswith(JWT.config.private_claim_prefix)
+            and not k.startswith(JWT.config.public_claim_namespace)
+            and k not in ("iss", "sub", "aud", "exp", "nbf", "iat", "jti")
+        }
+        return private_claims
+
+    def _get_public_claims(self):
+        public_claims = {
+            k.replace(JWT.config.public_claim_namespace, ""): v
+            for k, v in self.raw_data.items()
+            if k.startswith(JWT.config.public_claim_namespace)
+        }
+
+        return unflatten(public_claims, splitter="path")
+
+    def _get_type(self):
+        raw_header = self.raw_jwt.split(".")[0]
+        header: Dict[str, str] = json.loads(base64url_decode(raw_header))
+
+        if header.get("class") not in ("access", "refresh"):
+            raise JWTDecodeError(
+                "Can not resolve token type by JOSE header. missing 'class'"
+            )
+
+        return header.get("class")
+
+    def _decode_jwt(self):
+        algorithm = JWT.config.algorithm
+        secret = (
+            JWT.config.secret_key
+            if algorithm.startswith("HS")
+            else JWT.config.private_key
+        )
+
+        jwt_data = jwt.decode(self.raw_jwt, secret, algorithms=[algorithm])
+
+        return jwt_data
+
+
+if __name__ == '__main__':
+    with JWT.initialize(object) as manager:
+        manager.config.secret_key = "secret"
+        manager.config.public_claim_namespace = "http://seonghyeon.dev/"
+
+    raw_jwt = JWT.create_access_token("user01", public_claims={"a": 12, "b": {"c": 12}})
+    print(raw_jwt)
+    token = Token(raw_jwt=raw_jwt)

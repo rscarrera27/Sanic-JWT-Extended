@@ -87,7 +87,7 @@ def jwt_required(
     def real(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
-            request = _get_request(*args)
+            request = _get_request(args)
             raw_jwt = _get_raw_jwt_from_request(request)
 
             token_obj = Token(raw_jwt)
@@ -123,7 +123,7 @@ def jwt_required(
 def jwt_optional(function: Callable):
     @wraps(function)
     async def wrapper(*args, **kwargs):
-        request = _get_request(*args)
+        request = _get_request(args)
         token_obj: Optional[Token] = None
 
         try:
@@ -149,7 +149,7 @@ def refresh_jwt_required(
     def real(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
-            request = _get_request(*args)
+            request = _get_request(args)
             raw_jwt = _get_raw_jwt_from_request(request)
 
             token_obj = Token(raw_jwt)

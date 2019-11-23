@@ -173,20 +173,3 @@ class JWT:
         refresh_token = cls._encode_jwt("refresh", payload, expires_delta)
 
         return refresh_token
-
-
-if __name__ == "__main__":
-    with JWT.initialize(object) as manager:
-        manager.config.secret_key = "secret"
-        manager.config.public_claim_namespace = "http://seonghyeon.dev/"
-
-    print(
-        JWT.create_access_token(
-            "user01", expires_delta=None, public_claims={"a": 12, "b": {"c": 12}}
-        )
-    )
-    print(
-        JWT.create_refresh_token(
-            "user01", public_claims={"a": 12, "b": {"c": 42}}, aud=".jwt.io"
-        )
-    )

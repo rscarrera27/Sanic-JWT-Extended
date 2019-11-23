@@ -111,13 +111,3 @@ class Token:
         jwt_data = jwt.decode(self.raw_jwt, secret, algorithms=[algorithm])
 
         return jwt_data
-
-
-if __name__ == '__main__':
-    with JWT.initialize(object) as manager:
-        manager.config.secret_key = "secret"
-        manager.config.public_claim_namespace = "http://seonghyeon.dev/"
-
-    raw_jwt = JWT.create_access_token("user01", public_claims={"a": 12, "b": {"c": 12}})
-    print(raw_jwt)
-    token = Token(raw_jwt=raw_jwt)

@@ -105,7 +105,7 @@ class Token:
         secret = (
             JWT.config.secret_key
             if algorithm.startswith("HS")
-            else JWT.config.private_key
+            else JWT.config.public_key
         )
 
         jwt_data = jwt.decode(self.raw_jwt, secret, algorithms=[algorithm])

@@ -1,14 +1,21 @@
-# Sanic-JWT-Extended
+<h1 align="center">🛡 Sanic-JWT-Extended 🛡</h1>
+
+<div align="center"> 
+
 [![Downloads](https://pepy.tech/badge/sanic-jwt-extended)](https://pepy.tech/project/sanic-jwt-extended)
 ![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
 ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
 [![Documentation Status](https://api.netlify.com/api/v1/badges/c2cf1ea1-bae1-448f-b52c-0dea6516446a/deploy-status)](https://sanic-jwt-extended.seonghyeon.dev)
 
-## What is Sanic-JWT-Extended?
+</div>
+
+> **☢️ This is README of 1.0.dev1 version. [Click here](https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/v0.4.4) to view current stable version(v0.4.4)**
+
+## 🚀 What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is an open source Sanic extension that provides JWT support (comply with RFC standard)
 
-## Why Sanic-JWT-Extended?
+## 💡 Why Sanic-JWT-Extended?
 Sanic-JWT-Extended not only adds support for using JSON Web Tokens (JWT) to Sanic for protecting views,
 but also many helpful (and **optional**) features  built in to make working with JSON Web Tokens
 easier. These include:
@@ -21,7 +28,7 @@ easier. These include:
 * blacklist support with some built-in blacklist
 * Provides Token object for easier jwt manifulation
 
-## Installation
+## ⚡️ Installation
 ```shell script
 $ pip install sanic-jwt-extended
 ```
@@ -32,10 +39,10 @@ $ poetry add sanic-jwt-extended
 $ pipenv install sanic-jwt-extended
 ```
 
-## Usage
+## 📚 Documentation
 [View the online documentation](https://sanic-jwt-extended.seonghyeon.dev/)
 
-## Developing Sanic-JWT-Extended
+## 🛠 Developing Sanic-JWT-Extended
 
 ### Prerequesties
 - [poetry](https://github.com/sdispater/poetry)

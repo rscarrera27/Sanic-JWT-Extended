@@ -31,8 +31,6 @@ def _get_raw_jwt_from_request(request: Request) -> str:
             functions.append(_get_raw_jwt_from_headers)
         if eligible_location == "query":
             functions.append(_get_raw_jwt_from_query_params)
-        else:
-            raise NotImplementedError("Currently only token in 'header', 'query' is supported")
 
     raw_jwt = None
     errors = []
@@ -74,7 +72,9 @@ def _get_raw_jwt_from_headers(request):
 def _get_raw_jwt_from_query_params(request):
     encoded_token = request.args.get(JWT.config.jwt_query_param_name)
     if not encoded_token:
-        raise NoAuthorizationError(f"Missing {JWT.config.jwt_query_param_name} query parameter")
+        raise NoAuthorizationError(
+            f"Missing {JWT.config.jwt_query_param_name} query parameter"
+        )
 
     return encoded_token
 

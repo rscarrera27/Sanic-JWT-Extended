@@ -1,204 +1,219 @@
 import datetime
-from json import JSONEncoder
+import uuid
+import warnings
+from contextlib import contextmanager
 
+import jwt
+from flatten_dict import flatten
 from jwt import ExpiredSignatureError, InvalidTokenError
-from sanic import Sanic
-from sanic.response import json
 
+from sanic_jwt_extended.blacklist import InMemoryBlacklist
+from sanic_jwt_extended.config import Config
 from sanic_jwt_extended.exceptions import (
-    AccessDenied,
+    AccessDeniedError,
     ConfigurationConflictError,
-    FreshTokenRequired,
+    FreshTokenRequiredError,
     InvalidHeaderError,
     JWTDecodeError,
     NoAuthorizationError,
     RevokedTokenError,
     WrongTokenError,
 )
-from sanic_jwt_extended.tokens import encode_access_token, encode_refresh_token
+from sanic_jwt_extended.handler import Handler
 
 
-class JWTManager:
-    """
-    An object used to hold JWT settings for the
-    Sanic-JWT-Extended extension.
-    Instances of :class:`JWTManger` are *not* bound to specific apps, so
-    you can create one in the main body of your code and then bind it
-    to your app in a factory function.
-    """
+class JWT:
+    config = None
+    handler = None
+    blacklist = None
 
-    def __init__(self, app: Sanic):
-        """
-        Create the JWTManager instance. You can either pass a sanic application in directly
-        here to register this extension with the sanic app, or you can call init_app after creating
-        this object (in a factory pattern).
-        :param app: A sanic application
-        """
-        if app is not None:
-            self.init_app(app=app)
+    @classmethod
+    @contextmanager
+    def initialize(cls, app):
+        cls.config = Config()
+        cls.handler = Handler()
 
-    def init_app(self, app: Sanic):
-        """
-        Register this extension with the sanic app.
-        :param app: A sanic application
-        """
-        self._set_error_handlers(app=app)
-        self._set_default_configuration_options(app=app)
-        app.jwt = self
+        yield JWT
 
-    @staticmethod
-    def _set_default_configuration_options(app):
-        """
-        Sets the default configuration options used by this extension
-        """
-        # Where to look for the JWT. Available options are cookies or headers
-        app.config.setdefault("JWT_TOKEN_LOCATION", ["headers"])
+        cls.config.read_only = True
+        cls.handler.read_only = True
+        cls._validate_config()
+        cls._setup_blacklist()
+        cls._set_error_handlers(app)
 
-        # Options for JWTs when the TOKEN_LOCATION is headers
-        app.config.setdefault("JWT_HEADER_NAME", "Authorization")
-        app.config.setdefault("JWT_HEADER_TYPE", "Bearer")
+    @classmethod
+    def _setup_blacklist(cls):
+        if cls.config.use_blacklist is True:
+            blacklist_cls = (
+                cls.config.blacklist_class
+                if cls.config.blacklist_class
+                else InMemoryBlacklist
+            )
 
-        # How long an a token will live before they expire.
-        app.config.setdefault(
-            "JWT_ACCESS_TOKEN_EXPIRES", datetime.timedelta(minutes=15)
+            cls.blacklist = blacklist_cls()
+
+    @classmethod
+    def _validate_config(cls):
+        if cls.config.algorithm.startswith("HS") and not cls.config.secret_key:
+            raise ConfigurationConflictError(
+                "HS* algorithm needs secret key to encode token"
+            )
+        elif cls.config.algorithm.startswith("RS"):
+            if not cls.config.private_key:
+                raise ConfigurationConflictError(
+                    "RS* algorithm needs private key to encode token"
+                )
+            if not cls.config.public_key:
+                raise ConfigurationConflictError("RS* algorithm needs public key")
+
+        if cls.config.use_blacklist:
+            if not cls.config.blacklist_class:
+                warnings.warn(
+                    "Blacklist enabled but blacklist class was not specified. "
+                    "Falling back to default in-memory blacklist"
+                )
+
+    @classmethod
+    def _set_error_handlers(cls, app):
+        app.error_handler.add(NoAuthorizationError, cls.handler.no_authorization)
+        app.error_handler.add(ExpiredSignatureError, cls.handler.expired_signature)
+        app.error_handler.add(InvalidHeaderError, cls.handler.invalid_header)
+        app.error_handler.add(InvalidTokenError, cls.handler.invalid_token)
+        app.error_handler.add(JWTDecodeError, cls.handler.jwt_decode_error)
+        app.error_handler.add(WrongTokenError, cls.handler.wrong_token)
+        app.error_handler.add(RevokedTokenError, cls.handler.revoked_token)
+        app.error_handler.add(FreshTokenRequiredError, cls.handler.fresh_token_required)
+        app.error_handler.add(AccessDeniedError, cls.handler.access_denied)
+
+    @classmethod
+    def _encode_jwt(cls, token_type, payload, expires_delta):
+        algorithm = cls.config.algorithm
+        secret = (
+            cls.config.secret_key
+            if algorithm.startswith("HS")
+            else cls.config.private_key
         )
-        app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES", datetime.timedelta(days=30))
 
-        # What algorithm to use to sign the token. See here for a list of options:
-        # https://github.com/jpadilla/pyjwt/blob/master/jwt/api_jwt.py
-        app.config.setdefault("JWT_ALGORITHM", "HS256")
+        iss = payload.pop("iss") if payload.get("iss") else cls.config.default_iss
+        aud = payload.pop("aud") if payload.get("aud") else cls.config.default_aud
+        iat = datetime.datetime.utcnow()
+        nbf = payload.pop("nbf") if payload.get("nbf") else iat
+        jti = uuid.uuid4().hex
 
-        # Secret key to sign JWTs with. Only used if a symmetric algorithm is
-        # used (such as the HS* algorithms). We will use the app secret key
-        # if this is not set.
-        app.config.setdefault("JWT_SECRET_KEY", None)
+        reserved_claims = {"iss": iss, "aud": aud, "jti": jti, "iat": iat, "nbf": nbf}
 
-        # The public key needed for asymmetric based signing algorithms.
-        app.config.setdefault("JWT_PUBLIC_KEY", None)
+        if expires_delta is not None:
+            reserved_claims["exp"] = iat + expires_delta
 
-        # The private key needed for asymmetric based signing algorithms.
-        app.config.setdefault("JWT_PRIVATE_KEY", None)
+        payload.update(reserved_claims)
+        payload = {k: v for k, v in payload.items() if v is not None}
 
-        app.config.setdefault("JWT_IDENTITY_CLAIM", "identity")
-        app.config.setdefault("JWT_USER_CLAIMS", "user_claims")
+        header = {"class": token_type}
 
-        app.config.setdefault("JWT_CLAIMS_IN_REFRESH_TOKEN", False)
+        token = jwt.encode(
+            payload, secret, algorithm, header, cls.config.json_encoder
+        ).decode("utf-8")
 
-        app.config.setdefault("JWT_ERROR_MESSAGE_KEY", "msg")
+        return token
 
-        app.config.setdefault("RBAC_ENABLED", False)
-
-        app.json_encoder = JSONEncoder
-
-    @staticmethod
-    def _set_error_handlers(app: Sanic):
-        """
-         Sets the error handler callbacks used by this extension
-         """
-
-        @app.exception(NoAuthorizationError)
-        async def handle_auth_error(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=401)
-
-        @app.exception(ExpiredSignatureError)
-        async def handle_expired_error(request, e):
-            return json(
-                {app.config.JWT_ERROR_MESSAGE_KEY: "Token has expired"}, status=401
-            )
-
-        @app.exception(InvalidHeaderError)
-        async def handle_invalid_header_error(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
-
-        @app.exception(InvalidTokenError)
-        async def handle_invalid_token_error(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
-
-        @app.exception(JWTDecodeError)
-        async def handle_jwt_decode_error(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
-
-        @app.exception(WrongTokenError)
-        async def handle_wrong_token_error(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=422)
-
-        @app.exception(RevokedTokenError)
-        async def handle_revoked_token_error(request, e):
-            return json(
-                {app.config.JWT_ERROR_MESSAGE_KEY: "Token has been revoked"}, status=422
-            )
-
-        @app.exception(FreshTokenRequired)
-        async def handle_fresh_token_required(request, e):
-            return json(
-                {app.config.JWT_ERROR_MESSAGE_KEY: "Fresh token required"}, status=422
-            )
-
-        @app.exception(AccessDenied)
-        async def handle_access_denied(request, e):
-            return json({app.config.JWT_ERROR_MESSAGE_KEY: str(e)}, status=401)
-
-    @staticmethod
-    async def _create_refresh_token(
-        app: Sanic, identity, user_claims, expires_delta=None
+    @classmethod
+    def create_access_token(
+        cls,
+        identity,
+        role=None,
+        fresh=None,
+        *,
+        expires_delta=None,
+        public_claims=None,
+        private_claims=None,
+        iss=None,
+        aud=None,
+        nbf=None,
     ):
-        config = app.config
+        private_claim_prefix = (
+            cls.config.private_claim_prefix if cls.config.private_claim_prefix else ""
+        )
+        payload = {"iss": iss, "sub": identity, "aud": aud, "nbf": nbf}
+
+        if role:
+            if not cls.config.use_acl:
+                raise ConfigurationConflictError("You should enable ACL to use.")
+            payload[cls.config.acl_claim] = role
+
+        if fresh is not None and isinstance(fresh, bool):
+            payload["fresh"] = fresh
+
+        if public_claims:
+            if not cls.config.public_claim_namespace:
+                raise ConfigurationConflictError(
+                    "You should specify namespace to use public claims. "
+                    "\n find more at: https://auth0.com/docs/tokens/concepts/claims-namespacing"
+                )
+
+            public_claims = flatten(public_claims, reducer="path")
+            for k, v in public_claims.items():
+                payload[cls.config.public_claim_namespace + k] = v
+
+        if private_claims:
+            for k, v in private_claims:
+                payload[private_claim_prefix + k] = v
 
         if expires_delta is None:
-            expires_delta = config.JWT_REFRESH_TOKEN_EXPIRES
+            expires_delta = cls.config.access_token_expires
 
-        if config.JWT_CLAIMS_IN_REFRESH_TOKEN:
-            user_claims = user_claims
-        else:
-            user_claims = None
+        access_token = cls._encode_jwt("access", payload, expires_delta)
 
-        secret = (
-            app.config.JWT_SECRET_KEY
-            if app.config.JWT_ALGORITHM.startswith("HS")
-            else app.config.JWT_PRIVATE_KEY
+        return access_token
+
+    @classmethod
+    def create_refresh_token(
+        cls,
+        identity,
+        role=None,
+        *,
+        expires_delta=None,
+        public_claims=None,
+        private_claims=None,
+        iss=None,
+        aud=None,
+        nbf=None,
+    ):
+        private_claim_prefix = (
+            cls.config.private_claim_prefix if cls.config.private_claim_prefix else ""
         )
+        payload = {"iss": iss, "sub": identity, "aud": aud, "nbf": nbf}
 
-        refresh_token = await encode_refresh_token(
-            identity=identity,
-            secret=secret,
-            algorithm=config.JWT_ALGORITHM,
-            expires_delta=expires_delta,
-            user_claims=user_claims,
-            identity_claim_key=config.JWT_IDENTITY_CLAIM,
-            user_claims_key=config.JWT_USER_CLAIMS,
-            json_encoder=app.json_encoder,
-        )
+        if role:
+            if not cls.config.use_acl:
+                raise ConfigurationConflictError("You should enable ACL to use.")
+            payload[cls.config.acl_claim] = role
+
+        if public_claims:
+            if not cls.config.public_claim_namespace:
+                raise ConfigurationConflictError(
+                    "You should specify namespace to use public claims. "
+                    "\n find more at: https://auth0.com/docs/tokens/concepts/claims-namespacing"
+                )
+
+            public_claims = flatten(public_claims, reducer="path")
+            for k, v in public_claims.items():
+                payload[cls.config.public_claim_namespace + k] = v
+
+        if private_claims:
+            for k, v in private_claims:
+                payload[private_claim_prefix + k] = v
+
+        if expires_delta is None:
+            expires_delta = cls.config.access_token_expires
+
+        refresh_token = cls._encode_jwt("refresh", payload, expires_delta)
 
         return refresh_token
 
-    @staticmethod
-    async def _create_access_token(
-        app: Sanic, identity, user_claims, role, fresh, expires_delta=None
-    ):
-        config = app.config
-
-        if expires_delta is None:
-            expires_delta = config.JWT_ACCESS_TOKEN_EXPIRES
-
-        if role and not config.RBAC_ENABLE:
-            raise ConfigurationConflictError("RBAC is not enabled!")
-
-        secret = (
-            app.config.JWT_SECRET_KEY
-            if app.config.JWT_ALGORITHM.startswith("HS")
-            else app.config.JWT_PRIVATE_KEY
-        )
-
-        access_token = await encode_access_token(
-            identity=identity,
-            secret=secret,
-            algorithm=config.JWT_ALGORITHM,
-            expires_delta=expires_delta,
-            fresh=fresh,
-            user_claims=user_claims,
-            role=role,
-            identity_claim_key=config.JWT_IDENTITY_CLAIM,
-            user_claims_key=config.JWT_USER_CLAIMS,
-            json_encoder=app.json_encoder,
-        )
-        return access_token
+    @classmethod
+    async def revoke(cls, token):
+        if not cls.config.use_blacklist:
+            raise ConfigurationConflictError(
+                "To revoke token, you should enable blacklist"
+            )
+        cls.blacklist.register(token)

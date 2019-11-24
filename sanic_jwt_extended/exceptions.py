@@ -47,16 +47,21 @@ class RevokedTokenError(JWTExtendedException):
     pass
 
 
-class FreshTokenRequired(JWTExtendedException):
+class FreshTokenRequiredError(JWTExtendedException):
     """
     Error raised when a valid, non-fresh JWT attempt to access an endpoint
-    protected by fresh_jwt_required
+    protected by jwt_required with fresh_required is True
     """
 
     pass
 
 
-class AccessDenied(JWTExtendedException):
+class AccessDeniedError(JWTExtendedException):
+    """
+    Error raised when a valid JWT attempt to access an endpoint
+    protected by jwt_required with not allowed role
+    """
+
     pass
 
 

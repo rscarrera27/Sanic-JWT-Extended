@@ -23,8 +23,10 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.6"
-sanic = "^0.7.0"
+sanic = ">= 18.12.0"
 PyJWT = "^1.6.4"
+dataclasses = { version = "*", python = "3.6.*" }
+flatten-dict = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^4.3.20"
@@ -34,6 +36,7 @@ pytest = "3.6.*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-redis = "*"
+mypy = "^0.740.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

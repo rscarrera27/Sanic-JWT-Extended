@@ -1,0 +1,21 @@
+title: "Sanic-JWT-Extended"
+description: >- # this means to ignore newlines until "baseurl:"
+  🛡An open source Sanic extension that provides JWT support 🛡
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "sanic-jwt-extended.seonghyeon.dev" # the base hostname & protocol for your site, e.g. http://example.com
+github_username: NovemberOscar
+
+theme: "just-the-docs"
+
+heading_anchors: true
+search_enabled: true
+search_tokenizer_separator: /[\s/]+/
+aux_links:
+  "Sanic-JWT-Extended on Github":
+    - "//github.com/NovemberOscar/Sanic-JWT-Extended"
+footer_content: 'Copyright &copy; 2017-2019 Seonghyeon Kim. Distributed by an <a href="https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/master/LICENSE">MIT license.</a>'
+
+repository: NovemberOscar/Sanic-JWT-Extended
+
+plugins:
+  - "jekyll-github-metadata"

@@ -1,11 +1,13 @@
 import datetime
 import uuid
+import warnings
 from contextlib import contextmanager
 
 import jwt
 from flatten_dict import flatten
 from jwt import ExpiredSignatureError, InvalidTokenError
 
+from sanic_jwt_extended.blacklist import InMemoryBlacklist
 from sanic_jwt_extended.config import Config
 from sanic_jwt_extended.exceptions import (
     AccessDeniedError,
@@ -23,6 +25,7 @@ from sanic_jwt_extended.handler import Handler
 class JWT:
     config = None
     handler = None
+    blacklist = None
 
     @classmethod
     @contextmanager
@@ -32,10 +35,22 @@ class JWT:
 
         yield JWT
 
-        cls._validate_config()
         cls.config.read_only = True
         cls.handler.read_only = True
+        cls._validate_config()
+        cls._setup_blacklist()
         cls._set_error_handlers(app)
+
+    @classmethod
+    def _setup_blacklist(cls):
+        if cls.config.use_blacklist is True:
+            blacklist_cls = (
+                cls.config.blacklist_class
+                if cls.config.blacklist_class
+                else InMemoryBlacklist
+            )
+
+            cls.blacklist = blacklist_cls()
 
     @classmethod
     def _validate_config(cls):
@@ -50,6 +65,13 @@ class JWT:
                 )
             if not cls.config.public_key:
                 raise ConfigurationConflictError("RS* algorithm needs public key")
+
+        if cls.config.use_blacklist:
+            if not cls.config.blacklist_class:
+                warnings.warn(
+                    "Blacklist enabled but blacklist class was not specified. "
+                    "Falling back to default in-memory blacklist"
+                )
 
     @classmethod
     def _set_error_handlers(cls, app):
@@ -187,3 +209,11 @@ class JWT:
         refresh_token = cls._encode_jwt("refresh", payload, expires_delta)
 
         return refresh_token
+
+    @classmethod
+    async def revoke(cls, token):
+        if not cls.config.use_blacklist:
+            raise ConfigurationConflictError(
+                "To revoke token, you should enable blacklist"
+            )
+        cls.blacklist.register(token)

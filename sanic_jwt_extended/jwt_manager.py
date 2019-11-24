@@ -4,10 +4,19 @@ from contextlib import contextmanager
 
 import jwt
 from flatten_dict import flatten
+from jwt import ExpiredSignatureError, InvalidTokenError
 
-from sanic_jwt_extended import exceptions
 from sanic_jwt_extended.config import Config
-from sanic_jwt_extended.exceptions import ConfigurationConflictError
+from sanic_jwt_extended.exceptions import (
+    AccessDeniedError,
+    ConfigurationConflictError,
+    FreshTokenRequiredError,
+    InvalidHeaderError,
+    JWTDecodeError,
+    NoAuthorizationError,
+    RevokedTokenError,
+    WrongTokenError,
+)
 from sanic_jwt_extended.handler import Handler
 
 
@@ -26,7 +35,7 @@ class JWT:
         cls._validate_config()
         cls.config.read_only = True
         cls.handler.read_only = True
-        # cls._set_error_handlers(app)
+        cls._set_error_handlers(app)
 
     @classmethod
     def _validate_config(cls):
@@ -44,10 +53,15 @@ class JWT:
 
     @classmethod
     def _set_error_handlers(cls, app):
-        app.error_handler.add(
-            exceptions.NoAuthorizationError, cls.handler.no_authorization
-        )
-        # app.error_handler.add()
+        app.error_handler.add(NoAuthorizationError, cls.handler.no_authorization)
+        app.error_handler.add(ExpiredSignatureError, cls.handler.expired_signature)
+        app.error_handler.add(InvalidHeaderError, cls.handler.invalid_header)
+        app.error_handler.add(InvalidTokenError, cls.handler.invalid_token)
+        app.error_handler.add(JWTDecodeError, cls.handler.jwt_decode_error)
+        app.error_handler.add(WrongTokenError, cls.handler.wrong_token)
+        app.error_handler.add(RevokedTokenError, cls.handler.revoked_token)
+        app.error_handler.add(FreshTokenRequiredError, cls.handler.fresh_token_required)
+        app.error_handler.add(AccessDeniedError, cls.handler.access_denied)
 
     @classmethod
     def _encode_jwt(cls, token_type, payload, expires_delta):

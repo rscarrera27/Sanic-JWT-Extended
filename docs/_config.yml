@@ -1,8 +1,6 @@
 title: "Sanic-JWT-Extended"
 description: >- # this means to ignore newlines until "baseurl:"
   🛡An open source Sanic extension that provides JWT support 🛡
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "sanic-jwt-extended.seonghyeon.dev" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: NovemberOscar
 
 theme: "just-the-docs"

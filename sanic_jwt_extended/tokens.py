@@ -21,6 +21,7 @@ class Token:
     type: str = field(init=False)
     role: Optional[str] = field(init=False, default=None)
     fresh: Optional[bool] = field(init=False, default=None)
+    identity: str = field(init=False)
 
     # Registered claims
     iss: Optional[str] = field(init=False, default=None)
@@ -44,7 +45,7 @@ class Token:
 
         try:
             self.iss = self.raw_data.get("iss")
-            self.sub = self.raw_data["sub"]
+            self.sub = self.identity = self.raw_data["sub"]
             self.aud = self.raw_data.get("aud")
             exp = self.raw_data.get("exp")
             nbf = self.raw_data["nbf"]

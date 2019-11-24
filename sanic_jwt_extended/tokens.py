@@ -69,7 +69,7 @@ class Token:
             raise JWTDecodeError(f"Wrong timestamp for 'nbf' or/and 'iat'")
 
         self.public_claims = self._get_public_claims() if JWT.config.public_claim_namespace else {}
-        self.private_claims = self._get_private_claims() if JWT.config.private_claim_prefix else {}
+        self.private_claims = self._get_private_claims()
 
     def _get_private_claims(self):
         private_claims = {

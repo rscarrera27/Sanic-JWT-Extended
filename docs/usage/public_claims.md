@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Add Public Claims 
+title: Adding Public Claims 
 parent: Usages
-nav_order: 2
+nav_order: 3
 ---
 
 ## What Is Public Claims?

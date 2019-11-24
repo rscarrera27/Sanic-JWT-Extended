@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Use Refresh Token
+title: Using Refresh Token
 parent: Usages
 nav_order: 2
 ---

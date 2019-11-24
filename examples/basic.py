@@ -10,7 +10,7 @@ from sanic_jwt_extended.tokens import Token
 app = Sanic(__name__)
 
 
-with JWT.initialize(object) as manager:
+with JWT.initialize(app) as manager:
     manager.config.secret_key = "secret"
     manager.config.public_claim_namespace = "http://seonghyeon.dev/"
 

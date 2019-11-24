@@ -155,7 +155,7 @@ def refresh_jwt_required(function=None, *, allow=None, deny=None):
             token_obj = Token(raw_jwt)
 
             if token_obj.type != "refresh":
-                raise WrongTokenError("Only access tokens are allowed")
+                raise WrongTokenError("Only refresh tokens are allowed")
 
             if allow and token_obj.role not in allow:
                 raise AccessDeniedError("You are not allowed to refresh in here")

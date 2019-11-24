@@ -28,9 +28,12 @@ class Config:
     public_claim_namespace: Optional[str] = None  # should be URL
     private_claim_prefix: Optional[str] = ""
 
-    # JWT in header configs
+    # JWT in headers configs
     jwt_header_key: str = "Authorization"
     jwt_header_prefix: str = "Bearer"
+
+    # JWT in query params option
+    jwt_query_param_name: str = "jwt"
 
     # ACL config
     use_acl: bool = False

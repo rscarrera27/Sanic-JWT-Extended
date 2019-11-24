@@ -27,8 +27,8 @@ class Config:
     refresh_token_expires: Union[timedelta, bool] = timedelta(days=30)
     algorithm: str = "HS256"
 
-    public_claim_namespace: Optional[str] = None  # should be URL
-    private_claim_prefix: Optional[str] = ""
+    public_claim_namespace: str = ""  # should be URL
+    private_claim_prefix: str = ""
 
     # JWT in headers configs
     jwt_header_key: str = "Authorization"

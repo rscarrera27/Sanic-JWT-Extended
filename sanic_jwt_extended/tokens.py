@@ -68,8 +68,8 @@ class Token:
         except Exception:
             raise JWTDecodeError(f"Wrong timestamp for 'nbf' or/and 'iat'")
 
-        self.public_claims = self._get_public_claims()
-        self.private_claims = self._get_private_claims()
+        self.public_claims = self._get_public_claims() if JWT.config.public_claim_namespace else {}
+        self.private_claims = self._get_private_claims() if JWT.config.private_claim_prefix else {}
 
     def _get_private_claims(self):
         private_claims = {
@@ -86,6 +86,7 @@ class Token:
             k.replace(JWT.config.public_claim_namespace, ""): v
             for k, v in self.raw_data.items()
             if k.startswith(JWT.config.public_claim_namespace)
+            and k not in ("iss", "sub", "aud", "exp", "nbf", "iat", "jti")
         }
 
         return unflatten(public_claims, splitter="path")

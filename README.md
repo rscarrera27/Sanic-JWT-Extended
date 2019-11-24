@@ -10,7 +10,7 @@
 
 </div>
 
-> **☢️ This is README of 1.0.dev1 version. [Click here](https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/v0.4.4) to view current stable version(v0.4.4)**
+> **☢️ This is README of 1.0.dev version. [Click here](https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/v0.4.4) to view current stable version(v0.4.4)**
 
 ## 🚀 What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is an open source Sanic extension that provides JWT support (comply with RFC standard)

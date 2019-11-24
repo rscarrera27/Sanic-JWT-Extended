@@ -9,7 +9,7 @@ permalink: /
 Warning!
 {: .label .label-red }
 
-**This is documentation for pre-released `1.0.dev1` version. the last stable version is `0.4.4`.**
+**This is documentation for pre-released `1.0.dev` version. the last stable version is `0.4.4`.**
 
 [Go to current stable version(v0.4.4)](https://sanic-jwt-extended.readthedocs.io/en/latest/){: .btn .btn-purple }
 

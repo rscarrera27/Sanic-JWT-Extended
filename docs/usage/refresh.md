@@ -37,7 +37,7 @@ refresh_token = JWT.create_refresh_token(identity=username)
 
 ## Protect Views
 
-`jwt_require` or `jwt_optional` only accepts *access* tokens. so you should use `refresh_jwt_required` to protect view with **refresh token**
+`jwt_required` or `jwt_optional` only accepts *access* tokens. so you should use `refresh_jwt_required` to protect view with **refresh token**
 
 <div class="code-example" markdown="1">
 Important

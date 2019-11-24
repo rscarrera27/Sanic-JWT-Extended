@@ -3,7 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
 ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
-[![Documentation Status](https://readthedocs.org/projects/sanic-jwt-extended/badge/?version=latest)](https://sanic-jwt-extended.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://api.netlify.com/api/v1/badges/c2cf1ea1-bae1-448f-b52c-0dea6516446a/deploy-status)](https://sanic-jwt-extended.seonghyeon.dev)
 
 ## What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is an open source Sanic extension that provides JWT support (comply with RFC standard)
@@ -29,11 +29,11 @@ $ pip install sanic-jwt-extended
 $ poetry add sanic-jwt-extended
 ```
 ```shell script
-$ pipenv add sanic-jwt-extended
+$ pipenv install sanic-jwt-extended
 ```
 
 ## Usage
-[View the online documentation](http://sanic-jwt-extended.readthedocs.io/en/latest/)
+[View the online documentation](https://sanic-jwt-extended.seonghyeon.dev/)
 
 ## Developing Sanic-JWT-Extended
 

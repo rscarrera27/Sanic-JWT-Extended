@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Adding Public Claims 
+title: Storing Public Claims 
 parent: Usages
 nav_order: 3
 ---

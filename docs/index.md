@@ -34,13 +34,13 @@ Sanic-JWT-Extended not only adds support for using JWT to Sanic for protecting v
 ## Installation
 
 ```bash
-$ pip install sanic-jwt-extended
+$ pip install sanic-jwt-extended --pre
 ```
 ```bash
-$ poetry add sanic-jwt-extended
+$ poetry add sanic-jwt-extended --git https://github.com/NovemberOscar/Sanic-JWT-Extended.git
 ```
 ```bash
-$ pipenv install sanic-jwt-extended
+$ pipenv install sanic-jwt-extended --pre
 ```
 
 ---

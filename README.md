@@ -10,7 +10,7 @@
 
 </div>
 
-> **☢️ This is README of 1.0.dev version. [Click here](https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/v0.4.4) to view current stable version(v0.4.4)**
+> **☢️ This is README of 1.0.dev version. [Click here](https://github.com/NovemberOscar/Sanic-JWT-Extended/tree/v0.4.4) to checkout current stable version(v0.4.4)**
 
 ## 🚀 What is Sanic-JWT-Extended?
 Sanic-JWT-Extended is an open source Sanic extension that provides JWT support (comply with RFC standard)
@@ -30,13 +30,13 @@ easier. These include:
 
 ## ⚡️ Installation
 ```shell script
-$ pip install sanic-jwt-extended
+$ pip install sanic-jwt-extended --pre
 ```
 ```shell script
-$ poetry add sanic-jwt-extended
+$ poetry add sanic-jwt-extended --git https://github.com/NovemberOscar/Sanic-JWT-Extended.git
 ```
 ```shell script
-$ pipenv install sanic-jwt-extended
+$ pipenv install sanic-jwt-extended --pre
 ```
 
 ## 📚 Documentation

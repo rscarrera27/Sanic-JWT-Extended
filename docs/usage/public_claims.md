@@ -11,7 +11,7 @@ Claims for public consumption, which might contain generic information like "nam
 
 [Find more about public claims at Auth0](https://auth0.com/docs/tokens/jwt-claims#public-claims){: .btn .btn-purple }
 
-# Using Public Claims
+# Storing Public Claims
 {: .no_toc }
 
 ## Table of contents
@@ -26,8 +26,8 @@ Claims for public consumption, which might contain generic information like "nam
 You should configure `JWT.config.public_claim_namespace`. for claim [namespacing](https://auth0.com/docs/tokens/concepts/claims-namespacing) (it is required to create collision-resistant names) 
 
 <div class="code-example" markdown="1">
-Info
-{: .label .label-green }
+Important
+{: .label .label-yellow }
 It is highly recommended to use URL(with trailing slash) for namespace!
 </div>
 ```python

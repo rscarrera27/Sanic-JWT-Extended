@@ -40,37 +40,7 @@ $ pipenv install sanic-jwt-extended --pre
 ```
 
 ## 📚 Documentation
-<button 
-href="https://sanic-jwt-extended.seonghyeon.dev/" 
-style="
-    display: inline-block;
-    box-sizing: border-box;
-    padding-top: 0.3em;
-    padding-right: 1em;
-    padding-bottom: 0.3em;
-    padding-left: 1em;
-    margin: 0;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: 500;
-    line-height: 1.5;
-    color: #7253ed;
-    text-decoration: none;
-    vertical-align: baseline;
-    cursor: pointer;
-    background-color: #f7f7f7;
-    border-width: 0;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
-    appearance: none;
-    color: #fff;
-    background-color: #5739ce;
-    background-image: linear-gradient(#6f55d5, #5739ce);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.12);"
-    >
-Go to documentation
-</button>
-
+[View the documentation online](https://sanic-jwt-extended.seonghyeon.dev/)
 
 ## 🛠 Developing Sanic-JWT-Extended
 

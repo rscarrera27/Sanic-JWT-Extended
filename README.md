@@ -40,7 +40,10 @@ $ pipenv install sanic-jwt-extended --pre
 ```
 
 ## 📚 Documentation
-[View the documentation online](https://sanic-jwt-extended.seonghyeon.dev/)
+<a href="https://sanic-jwt-extended.seonghyeon.dev">
+<img src="https://i.imgur.com/eXRmcKO.png)](https://sanic-jwt-extended.seonghyeon.dev/" width="300" />
+</a>
+
 
 ## 🛠 Developing Sanic-JWT-Extended
 

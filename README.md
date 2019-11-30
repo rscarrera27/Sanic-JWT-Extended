@@ -7,6 +7,8 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
 ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
 [![Documentation Status](https://api.netlify.com/api/v1/badges/c2cf1ea1-bae1-448f-b52c-0dea6516446a/deploy-status)](https://sanic-jwt-extended.seonghyeon.dev)
+![Tests](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Tests/badge.svg)
+![Deploy](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Upload%20to%20PyPI/badge.svg)
 
 </div>
 

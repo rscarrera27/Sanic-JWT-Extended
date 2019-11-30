@@ -63,18 +63,32 @@ This blacklist uses python `list` as a token storage. revoked token's `jti` will
 
 ### `RedisBlacklist`
 
+
 This blacklist uses `redis` as a token storage. When token revoked, this blacklist stores token's `jti` with expiration.
+
+To use `RedisBlacklist`, you shoudl connection info to `JWT.config.blacklist_init_kwargs`
+{: .code-example }
+```python
+with JWT.initialize(app) as manager:
+    manager.config.blacklist_init_kwargs = {
+        "connection_info": {
+            "address": "redis://:@{my_redis_host}:{my_redis_port}",
+            "minsize": 5,
+            "maxsize": 10,
+        }
+    }
+```
 
 ## Creating Your Own Blacklist Class
 
 DON'T PANIC!
 {: .text-purple-100 .code-example }
 
-Creating your own blacklist is very easy. Just inherit `BlacklistABC` and implements `register` and `is_blacklisted` and `__init__` with no argument.
+Creating your own blacklist is very easy. Just inherit `BlacklistABC` and implements `register` and `is_blacklisted`
 
 ```python
 class FooBarBlacklist(BlacklistABC):
-    def __init__(self):  # no argument!
+    def __init__(self):
         pass
 
     def register(self, token: Token):

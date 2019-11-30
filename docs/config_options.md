@@ -61,7 +61,8 @@ nav_order: 3
 
 ## Blacklist Configs
 
-| key             | description                    | type               | default             |
-|:----------------|:-------------------------------|:-------------------|:--------------------|
-| use_blacklist   | Enable/disable token revoking. | bool               | `False`             |
-| blacklist_class | Blacklist class to use         | Type[BlacklistABC] | `InMemoryBlacklist` |
+| key                   | description                                     | type                     | default             |
+|:----------------------|:------------------------------------------------|:-------------------------|:--------------------|
+| use_blacklist         | Enable/disable token revoking.                  | bool                     | `False`             |
+| blacklist_class       | Blacklist class to use                          | Type[BlacklistABC]       | `InMemoryBlacklist` |
+| blacklist_init_kwargs | keyword arguments dictionary for blacklist init | Optional[Dict[str, Any]] | `None`              |

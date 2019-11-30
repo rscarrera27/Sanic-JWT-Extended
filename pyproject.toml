@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Sanic-JWT-Extended"
-version = "1.0.dev4"
+version = "1.0.dev5"
 description = "Extended JWT integration with Sanic"
 authors = [
     "Seonghyeon Kim <kim@seonghyeon.dev>"

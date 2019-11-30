@@ -13,59 +13,48 @@ nav_order: 4
 1. TOC
 {:toc}
 
+## What Is Private Claims?
+
+claims to share information specific to your application., which might contain application specific information like `user_id` or `permission_level`.
+
+[Find more about private claims at Auth0](https://auth0.com/docs/tokens/jwt-claims#private-claims){: .btn .btn-purple }
 
 ## Configuration
 
-First, you should initialize and configure `JWT` through `JWT.initialize` context  manager.
+We highly **recommend** to configure `JWT.config.private_claim_prefix` to avoid collision, such as through [namespacing](https://auth0.com/docs/tokens/concepts/claims-namespacing)
 
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You must specify `secret_key` or `private_key` + `public_key` that needed to encode JWT with `algorithm`
-</div>
 ```python
 with JWT.initialize(app) as manager:
-    manager.config.secret_key = "secret"
+    manager.config.private_claim_prefix = "sanic-jwt-extended"
 ```
+
 [Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+
 
 ## Create Token
 
-<div class="code-example" markdown="1">
-After `JWT` initialized and configured. you can create access token through `JWT.create_access_token`
-</div>
+
+Both access and refresh token can contain role. you must provide role in string
+
 ```python
-access_token = JWT.create_access_token(identity=username)
+refresh_token = JWT.create_access_token(identity=username, role="ADMIN")
 ```
+
+You can also create token without role.
+
 [Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
 ## Protect Views
 
-By decorate view function(method) with `jwt_required` or `jwt_optional`, You can protect view with JWT.
-
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You should specify `token` keyword argument to view function(method) 
-</div>
-```python
-@app.route("/protected", methods=["GET"])
-@jwt_required
-async def protected(request: Request, token: Token):
-    ...
-```
-[Find more about protecting views]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+There's nothing to configurate to get private claims
 
 ## Use Token Object
 
-`jwt_required` and `jwt_optional` injects `Token` to your view function/method. by `token` keyword argument.
-and given token object contains useful data of given JWT.
+propagated `Token` object contains private claims in `Token.private_claims`. prefix is not exist on this time. 
 
 ```python
-token.identity  # identity(sub) of JWT
-token.exp  # expiration(exp) of JWT
+token.private_claims
 ```
-
 
 [Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
@@ -88,26 +77,27 @@ from sanic_jwt_extended.tokens import Token
 
 app = Sanic(__name__)
 
-
 with JWT.initialize(app) as manager:
     manager.config.secret_key = "secret"
+    manager.config.private_claim_prefix = "sanic_jwt_extended"
 
 
 @app.route("/login", methods=["POST"])
 async def login(request: Request):
     username = request.json.get("username", "user")
 
-    access_token = JWT.create_access_token(identity=username)
+    access_token = JWT.create_access_token(identity=username, private_claims={"foo": "bar"})
 
     return json(
-        dict(access_token=access_token), status=200
+        dict(access_token=access_token, refresh_token=refresh_token), status=200
     )
 
 
 @app.route("/protected", methods=["GET"])
 @jwt_required
 async def protected(request: Request, token: Token):
-    return json(dict(identity=token.identity, type=token.type, raw_data=token.raw_data, exp=str(token.exp)))
+    return json(dict(private_claims=token.private_claims))
+
 
 
 if __name__ == "__main__":

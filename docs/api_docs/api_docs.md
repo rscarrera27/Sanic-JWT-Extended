@@ -8,5 +8,5 @@ permalink: /usage
 
 # API Documentation
 
-Helpful examples for you.
+References of API
 {: .fs-6 .fw-300 }

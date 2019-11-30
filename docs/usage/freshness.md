@@ -4,7 +4,13 @@ title: Token Freshness
 parent: Usages
 nav_order: 5
 ---
-# Basic Usage
+
+## What is Fresh Token?
+The fresh token pattern in [`flask-jwt-extended`](https://flask-jwt-extended.readthedocs.io/en/stable/token_freshness/) is also available in this extension. This pattern is very simple, you can choose to mark some access tokens as fresh and others as non-fresh
+
+This is useful for allowing fresh tokens to do some critical things (such as update an email address or complete an online purchase), but to deny those features to non-fresh tokens. Utilizing Fresh tokens in conjunction with refresh tokens can lead to a more secure site, without creating a bad user experience by making users constantly re-authenticate.
+
+# Token Freshness
 {: .no_toc }
 
 ## Table of contents
@@ -16,41 +22,28 @@ nav_order: 5
 
 ## Configuration
 
-First, you should initialize and configure `JWT` through `JWT.initialize` context  manager.
-
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You must specify `secret_key` or `private_key` + `public_key` that needed to encode JWT with `algorithm`
-</div>
-```python
-with JWT.initialize(app) as manager:
-    manager.config.secret_key = "secret"
-```
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+There's nothing to configurate to use fresh token pattern.
 
 ## Create Token
 
 <div class="code-example" markdown="1">
-After `JWT` initialized and configured. you can create access token through `JWT.create_access_token`
+Just pass `True` to `fresh` parameter when create access token
 </div>
 ```python
-access_token = JWT.create_access_token(identity=username)
+access_token = JWT.create_access_token(identity=username, fresh=True)
 ```
 [Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
 ## Protect Views
 
-By decorate view function(method) with `jwt_required` or `jwt_optional`, You can protect view with JWT.
+By decorate view function(method) with `jwt_required`, you can check token freshness
 
 <div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You should specify `token` keyword argument to view function(method) 
+Pass `True` to `fresh_required` parameter of `jwt_required`.
 </div>
 ```python
 @app.route("/protected", methods=["GET"])
-@jwt_required
+@jwt_required(fresh_required=True)
 async def protected(request: Request, token: Token):
     ...
 ```
@@ -58,14 +51,11 @@ async def protected(request: Request, token: Token):
 
 ## Use Token Object
 
-`jwt_required` and `jwt_optional` injects `Token` to your view function/method. by `token` keyword argument.
-and given token object contains useful data of given JWT.
+propagated `Token` object contains freshness info in `Token.fresh`. if token type is not `access` or freshness not specifed, default value is `None` 
 
 ```python
-token.identity  # identity(sub) of JWT
-token.exp  # expiration(exp) of JWT
+token.fresh  # nullable
 ```
-
 
 [Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
@@ -97,7 +87,7 @@ with JWT.initialize(app) as manager:
 async def login(request: Request):
     username = request.json.get("username", "user")
 
-    access_token = JWT.create_access_token(identity=username)
+    access_token = JWT.create_access_token(identity=username, fresh=True)
 
     return json(
         dict(access_token=access_token), status=200
@@ -105,9 +95,9 @@ async def login(request: Request):
 
 
 @app.route("/protected", methods=["GET"])
-@jwt_required
+@jwt_required(fresh_required=True)
 async def protected(request: Request, token: Token):
-    return json(dict(identity=token.identity, type=token.type, raw_data=token.raw_data, exp=str(token.exp)))
+    return json(dict(identity=token.identity, is_fresh=token.fresh, raw_data=token.raw_data, exp=str(token.exp)))
 
 
 if __name__ == "__main__":

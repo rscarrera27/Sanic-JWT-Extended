@@ -28,7 +28,7 @@ You should configure `JWT.config.public_claim_namespace`. for claim [namespacing
 <div class="code-example" markdown="1">
 Important
 {: .label .label-yellow }
-It is highly recommended to use URL(with trailing slash) for namespace!
+It is **highly recommended** to use URL(with trailing slash) for namespace!
 </div>
 ```python
 ```python

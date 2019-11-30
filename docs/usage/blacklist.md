@@ -4,7 +4,15 @@ title: Blacklist and Token Revoking
 parent: Usages
 nav_order: 6
 ---
-# Basic Usage
+
+## What is Blacklist?
+Blacklist is used to revoke a specific token so that it can be no longer access your endpoints.
+
+Blacklisting works by providing blacklist. This blacklist's method to check revoked called when token tries to access endpoint. If the blacklist's method says that the token is revoked, we will reject request.
+
+basically we provides `InMemoryBlacklist` and `RedisBlacklist`. or you can create your own blacklist by inherit `BlacklistABC`
+
+# Blacklist and Token Revoking
 {: .no_toc }
 
 ## Table of contents
@@ -16,58 +24,65 @@ nav_order: 6
 
 ## Configuration
 
-First, you should initialize and configure `JWT` through `JWT.initialize` context  manager.
+First, you should enable `use_blacklist` option
 
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You must specify `secret_key` or `private_key` + `public_key` that needed to encode JWT with `algorithm`
-</div>
 ```python
 with JWT.initialize(app) as manager:
-    manager.config.secret_key = "secret"
+    manager.config.use_blacklist = True
 ```
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
-## Create Token
+Then, provide instanciable blacklist **class** (not instance). if not provided, extension will use `InMemoryBlacklist` by default
 
-<div class="code-example" markdown="1">
-After `JWT` initialized and configured. you can create access token through `JWT.create_access_token`
-</div>
 ```python
-access_token = JWT.create_access_token(identity=username)
+with JWT.initialize(app) as manager:
+    manager.config.blacklist_class = RedisBlacklist
 ```
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+
+[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
 ## Protect Views
 
-By decorate view function(method) with `jwt_required` or `jwt_optional`, You can protect view with JWT.
+There is nothing to configure to check revoked tokens. decorator automatically rejects revoked token if `use_blacklist` is `True`
 
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You should specify `token` keyword argument to view function(method) 
-</div>
-```python
-@app.route("/protected", methods=["GET"])
-@jwt_required
-async def protected(request: Request, token: Token):
-    ...
-```
-[Find more about protecting views]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+## Revoke Tokens
 
-## Use Token Object
-
-`jwt_required` and `jwt_optional` injects `Token` to your view function/method. by `token` keyword argument.
-and given token object contains useful data of given JWT.
+If you want to revoke specific token, just pass token object to `JWT.revoke`.
 
 ```python
-token.identity  # identity(sub) of JWT
-token.exp  # expiration(exp) of JWT
+JWT.revoke(token)
 ```
 
+## Built-In Blacklist Class
 
-[Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+### `InMemoryBlacklist`
+
+Do not use in production environment!
+{: .text-red-100 .code-example }
+
+This blacklist uses python `list` as a token storage. revoked token's `jti` will be contained.
+
+### `RedisBlacklist`
+
+This blacklist uses `redis` as a token storage. When token revoked, this blacklist stores token's `jti` with expiration.
+
+## Creating Your Own Blacklist Class
+
+DON'T PANIC!
+{: .text-purple-100 .code-example }
+
+Creating your own blacklist is very easy. Just inherit `BlacklistABC` and implements `register` and `is_blacklisted` and `__init__` with no argument.
+
+```python
+class FooBarBlacklist(BlacklistABC):
+    def __init__(self):  # no argument!
+        pass
+
+    def register(self, token: Token):
+        pass
+
+    def is_blacklisted(self, token: Token):
+        pass
+```
 
 
 ---
@@ -91,6 +106,7 @@ app = Sanic(__name__)
 
 with JWT.initialize(app) as manager:
     manager.config.secret_key = "secret"
+    manager.config.use_blacklist = True
 
 
 @app.route("/login", methods=["POST"])
@@ -101,6 +117,17 @@ async def login(request: Request):
 
     return json(
         dict(access_token=access_token), status=200
+    )
+
+
+@app.route("/logout", methods=["POST"])
+@refresh_jwt_required
+async def logout(request: Request, token: Token):
+
+    JWT.revoke(token)
+
+    return json(
+        dict(msg="Goodbye"), status=200
     )
 
 

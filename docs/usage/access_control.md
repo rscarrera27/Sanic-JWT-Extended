@@ -4,7 +4,11 @@ title: Access Control
 parent: Usages
 nav_order: 7
 ---
-# Basic Usage
+
+## What is Access Control?
+This extension provides built-in access control feature. By using access control, You can provide a role to JWT and specify which role can access which endpoints.
+
+# Access Control
 {: .no_toc }
 
 ## Table of contents
@@ -16,17 +20,20 @@ nav_order: 7
 
 ## Configuration
 
-First, you should initialize and configure `JWT` through `JWT.initialize` context  manager.
+First, you should enable `use_acl` option
 
-<div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You must specify `secret_key` or `private_key` + `public_key` that needed to encode JWT with `algorithm`
-</div>
 ```python
 with JWT.initialize(app) as manager:
-    manager.config.secret_key = "secret"
+    manager.config.use_acl = True
 ```
+
+Then, spcify which claim you want to store a role to. (default is `permission`)
+
+```python
+with JWT.initialize(app) as manager:
+    manager.config.acl_claim = "role"
+```
+
 [Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
 ## Create Token
@@ -41,16 +48,17 @@ access_token = JWT.create_access_token(identity=username)
 
 ## Protect Views
 
-By decorate view function(method) with `jwt_required` or `jwt_optional`, You can protect view with JWT.
+`allow` and `deny` can't be used together.
+{: .text-yellow-300 .code-example }
+
+All decorators could check role.
 
 <div class="code-example" markdown="1">
-Important
-{: .label .label-yellow }
-You should specify `token` keyword argument to view function(method) 
+Specify `allow` or `deny` to allow or deny roles.
 </div>
 ```python
 @app.route("/protected", methods=["GET"])
-@jwt_required
+@jwt_required(allow=["ADMIN", "SUPER-ADMIN"])
 async def protected(request: Request, token: Token):
     ...
 ```
@@ -58,14 +66,11 @@ async def protected(request: Request, token: Token):
 
 ## Use Token Object
 
-`jwt_required` and `jwt_optional` injects `Token` to your view function/method. by `token` keyword argument.
-and given token object contains useful data of given JWT.
+propagated `Token` object contains role info in `Token.role`. if role is not specifed, default value is `None` 
 
 ```python
-token.identity  # identity(sub) of JWT
-token.exp  # expiration(exp) of JWT
+token.role
 ```
-
 
 [Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
 
@@ -79,6 +84,8 @@ token.exp  # expiration(exp) of JWT
 ```python
 import uuid
 
+from enum import Enum
+
 from sanic import Sanic
 from sanic.response import json
 from sanic.request import Request
@@ -89,25 +96,37 @@ from sanic_jwt_extended.tokens import Token
 app = Sanic(__name__)
 
 
+class Role(Enum):
+    user = "USER"
+    admin = "ADMIN"
+
+
 with JWT.initialize(app) as manager:
     manager.config.secret_key = "secret"
+    manager.config.use_acl = True
 
 
 @app.route("/login", methods=["POST"])
 async def login(request: Request):
     username = request.json.get("username", "user")
 
-    access_token = JWT.create_access_token(identity=username)
+    access_token = JWT.create_access_token(identity=username, role=Role.user.value)
 
     return json(
         dict(access_token=access_token), status=200
     )
 
 
-@app.route("/protected", methods=["GET"])
-@jwt_required
-async def protected(request: Request, token: Token):
-    return json(dict(identity=token.identity, type=token.type, raw_data=token.raw_data, exp=str(token.exp)))
+@app.route("/user", methods=["GET"])
+@jwt_required(allow=[Role.user.value, ])
+async def user(request: Request, token: Token):
+    return json(dict(identity=token.identity, role=token.role, raw_data=token.raw_data, exp=str(token.exp)))
+
+
+@app.route("/admin", methods=["GET"])
+@jwt_required(allow=[Role.admin.value, ])
+async def admin(request: Request, token: Token):
+    return json(dict(identity=token.identity, role=token.role, raw_data=token.raw_data, exp=str(token.exp)))
 
 
 if __name__ == "__main__":

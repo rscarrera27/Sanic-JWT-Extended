@@ -73,7 +73,7 @@ class Token:
 
     def _get_private_claims(self):
         private_claims = {
-            k.replace(JWT.config.private_claim_prefix, ""): v
+            k.replace(f"{JWT.config.private_claim_prefix}.", ""): v
             for k, v in self.raw_data.items()
             if k.startswith(JWT.config.private_claim_prefix)
             and not k.startswith(JWT.config.public_claim_namespace)

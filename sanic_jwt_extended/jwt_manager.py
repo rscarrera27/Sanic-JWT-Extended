@@ -201,7 +201,7 @@ class JWT:
 
         if private_claims:
             for k, v in private_claims:
-                payload[private_claim_prefix + k] = v
+                payload[f"{private_claim_prefix}.{k}"] = v
 
         if expires_delta is None:
             expires_delta = cls.config.access_token_expires

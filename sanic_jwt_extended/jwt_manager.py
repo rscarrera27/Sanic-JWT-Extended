@@ -102,7 +102,7 @@ class JWT:
 
         reserved_claims = {"iss": iss, "aud": aud, "jti": jti, "iat": iat, "nbf": nbf}
 
-        if expires_delta is not None:
+        if isinstance(expires_delta, datetime.timedelta):
             reserved_claims["exp"] = iat + expires_delta
 
         payload.update(reserved_claims)

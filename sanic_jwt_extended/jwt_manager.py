@@ -49,8 +49,11 @@ class JWT:
                 if cls.config.blacklist_class
                 else InMemoryBlacklist
             )
-
-            cls.blacklist = blacklist_cls()
+            
+            if cls.config.blacklist_init_kwargs:
+                cls.blacklist = blacklist_cls(cls.config.blacklist_init_kwargs)
+            else:
+                cls.blacklist = blacklist_cls()
 
     @classmethod
     def _validate_config(cls):
@@ -216,4 +219,4 @@ class JWT:
             raise ConfigurationConflictError(
                 "To revoke token, you should enable blacklist"
             )
-        cls.blacklist.register(token)
+        await cls.blacklist.register(token)

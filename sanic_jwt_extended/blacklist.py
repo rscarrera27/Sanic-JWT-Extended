@@ -1,14 +1,20 @@
 import warnings
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Dict, Any
+
+import aioredis
+
+from sanic_jwt_extended.redis import RedisConnection
 
 
 class BlacklistABC(ABC):
     @abstractmethod
-    def register(self, token):
+    async def register(self, token):
         pass
 
     @abstractmethod
-    def is_blacklisted(self, token):
+    async def is_blacklisted(self, token):
         pass
 
 
@@ -19,16 +25,31 @@ class InMemoryBlacklist(BlacklistABC):
             "Using in-memory blacklist is not recommended for production environment"
         )
 
-    def register(self, token):
+    async def register(self, token):
         self.blacklist.append(token.jti)
 
-    def is_blacklisted(self, token):
+    async def is_blacklisted(self, token):
         return token.jti in self.blacklist
 
 
-class RedisBlacklist(BlacklistABC):  # TODO implement
-    def register(self, token):
-        pass
+class RedisBlacklist(BlacklistABC):
 
-    def is_blacklisted(self, token):
-        pass
+    def __init__(self, connection_info):
+        self.connection_info = connection_info
+
+    async def register(self, token):
+        if not RedisConnection.redis:
+            await RedisConnection.initialize(self.connection_info)
+
+        kwargs = {}
+
+        if token.exp:
+            kwargs["expire"] = token.exp
+
+        await RedisConnection.set(token.jti.hex, token.raw_jwt, **kwargs)
+
+    async def is_blacklisted(self, token):
+        if not RedisConnection.redis:
+            await RedisConnection.initialize(self.connection_info)
+
+        return bool(RedisConnection.get(token.jti.hex))

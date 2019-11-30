@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import timedelta
 from json import JSONDecoder, JSONEncoder
-from typing import Any, Optional, Tuple, Type, Union
+from typing import Any, Optional, Tuple, Type, Union, Dict
 
 from sanic_jwt_extended.blacklist import BlacklistABC
 
@@ -44,6 +44,7 @@ class Config:
     # Blacklist config
     use_blacklist: bool = False
     blacklist_class: Optional[Type[BlacklistABC]] = None
+    blacklist_init_kwargs: Optional[Dict[str, Any]] = None
 
     def __setattr__(self, key, value):
         if self.read_only:

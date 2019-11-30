@@ -27,6 +27,7 @@ sanic = ">= 18.12.0"
 PyJWT = "^1.6.4"
 dataclasses = { version = "*", python = "3.6.*" }
 flatten-dict = "^0.2.0"
+aioredis = "^1.3"
 
 [tool.poetry.dev-dependencies]
 isort = "^4.3.20"

@@ -33,7 +33,7 @@ After `JWT` initialized and configured. you can create refresh token through `JW
 ```python
 refresh_token = JWT.create_refresh_token(identity=username)
 ```
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about creating token]({{ site.baseurl }}{% link api_docs/jwt.md %}#class-sanic_jwtextendedjwt){: .btn .btn-outline }
 
 ## Protect Views
 

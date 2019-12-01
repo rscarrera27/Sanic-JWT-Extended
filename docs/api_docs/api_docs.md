@@ -8,5 +8,5 @@ permalink: /usage
 
 # API Documentation
 
-References of API
+In here you will find the API for everything exposed in this extension.
 {: .fs-6 .fw-300 }

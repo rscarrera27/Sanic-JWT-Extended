@@ -28,11 +28,10 @@ with JWT.initialize(app) as manager:
     manager.config.private_claim_prefix = "sanic-jwt-extended"
 ```
 
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about configuration]({{ site.baseurl }}{% link config_options.md %}){: .btn .btn-outline }
 
 
 ## Create Token
-
 
 Both access and refresh token can contain role. you must provide role in string
 
@@ -42,7 +41,7 @@ refresh_token = JWT.create_access_token(identity=username, role="ADMIN")
 
 You can also create token without role.
 
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about creating token]({{ site.baseurl }}{% link api_docs/jwt.md %}#class-sanic_jwtextendedjwt){: .btn .btn-outline }
 
 ## Protect Views
 

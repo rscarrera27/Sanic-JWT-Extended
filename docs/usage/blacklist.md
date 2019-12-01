@@ -38,7 +38,7 @@ with JWT.initialize(app) as manager:
     manager.config.blacklist_class = RedisBlacklist
 ```
 
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about configuration]({{ site.baseurl }}{% link config_options.md %}){: .btn .btn-outline }
 
 ## Protect Views
 

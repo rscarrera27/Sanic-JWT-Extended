@@ -35,7 +35,7 @@ It is **highly recommended** to use URL(with trailing slash) for namespace!
 with JWT.initialize(app) as manager:
     manager.config.public_claim_namespace = "https://jwt.io/"
 ```
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about configuration]({{ site.baseurl }}{% link config_options.md %}){: .btn .btn-outline }
 
 ## Create Token
 
@@ -61,7 +61,7 @@ propagated map of public claims will be flatten and url-form
 }
 ```
 
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about creating token]({{ site.baseurl }}{% link api_docs/jwt.md %}#class-sanic_jwtextendedjwt){: .btn .btn-outline }
 
 ## Protect Views
 

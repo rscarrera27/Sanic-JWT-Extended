@@ -32,7 +32,7 @@ Just pass `True` to `fresh` parameter when create access token
 ```python
 access_token = JWT.create_access_token(identity=username, fresh=True)
 ```
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about creating token]({{ site.baseurl }}{% link api_docs/jwt.md %}#class-sanic_jwtextendedjwt){: .btn .btn-outline }
 
 ## Protect Views
 

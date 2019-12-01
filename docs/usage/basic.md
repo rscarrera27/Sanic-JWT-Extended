@@ -27,7 +27,7 @@ You must specify `secret_key` or `private_key` + `public_key` that needed to enc
 with JWT.initialize(app) as manager:
     manager.config.secret_key = "secret"
 ```
-[Find more about configuration]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about configuration]({{ site.baseurl }}{% link config_options.md %}){: .btn .btn-outline }
 
 ## Create Token
 
@@ -37,7 +37,7 @@ After `JWT` initialized and configured. you can create access token through `JWT
 ```python
 access_token = JWT.create_access_token(identity=username)
 ```
-[Find more about creating token]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about creating token]({{ site.baseurl }}{% link api_docs/jwt.md %}#class-sanic_jwtextendedjwt){: .btn .btn-outline }
 
 ## Protect Views
 

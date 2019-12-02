@@ -55,7 +55,7 @@ propagated `Token` object contains private claims in `Token.private_claims`. pre
 token.private_claims
 ```
 
-[Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about token object]({{ site.baseurl }}{% link api_docs/token.md %}){: .btn .btn-outline }
 
 
 ---

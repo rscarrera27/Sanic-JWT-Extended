@@ -80,6 +80,10 @@ def _get_raw_jwt_from_query_params(request):
     return encoded_token
 
 
+def _get_raw_jwt_from_cookie(request):
+
+
+
 def _get_raw_jwt_from_cookies(request):
     pass
 

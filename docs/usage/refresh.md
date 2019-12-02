@@ -50,7 +50,7 @@ You should specify `token` keyword argument to view function(method) as same as 
 async def refresh(request: Request, token: Token):
     ...
 ```
-[Find more about protecting views]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about protecting views]({{ site.baseurl }}{% link api_docs/decorators.md %}){: .btn .btn-outline }
 
 ---
 

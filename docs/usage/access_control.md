@@ -62,7 +62,7 @@ Specify `allow` or `deny` to allow or deny roles.
 async def protected(request: Request, token: Token):
     ...
 ```
-[Find more about protecting views]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about protecting views]({{ site.baseurl }}{% link api_docs/decorators.md %}){: .btn .btn-outline }
 
 ## Use Token Object
 
@@ -72,7 +72,7 @@ propagated `Token` object contains role info in `Token.role`. if role is not spe
 token.role
 ```
 
-[Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about token object]({{ site.baseurl }}{% link api_docs/token.md %}){: .btn .btn-outline }
 
 
 ---

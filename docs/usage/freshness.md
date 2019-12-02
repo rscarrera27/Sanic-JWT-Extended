@@ -47,7 +47,7 @@ Pass `True` to `fresh_required` parameter of `jwt_required`.
 async def protected(request: Request, token: Token):
     ...
 ```
-[Find more about protecting views]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about protecting views]({{ site.baseurl }}{% link api_docs/decorators.md %}){: .btn .btn-outline }
 
 ## Use Token Object
 
@@ -57,7 +57,7 @@ propagated `Token` object contains freshness info in `Token.fresh`. if token typ
 token.fresh  # nullable
 ```
 
-[Find more about token object]({{ site.baseurl }}{% link usage/basic.md %}){: .btn .btn-outline }
+[Find more about token object]({{ site.baseurl }}{% link api_docs/token.md %}){: .btn .btn-outline }
 
 
 ---

@@ -49,7 +49,7 @@ class JWT:
                 if cls.config.blacklist_class
                 else InMemoryBlacklist
             )
-            
+
             if cls.config.blacklist_init_kwargs:
                 cls.blacklist = blacklist_cls(**cls.config.blacklist_init_kwargs)
             else:

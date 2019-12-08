@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import aioredis
 import ujson
@@ -30,9 +30,7 @@ class RedisConnection:
         cls.redis = None
 
     @classmethod
-    async def set(
-        cls, key: str, value: Any, **kwargs
-    ) -> None:
+    async def set(cls, key: str, value: Any, **kwargs) -> None:
         redis = await cls._get_redis_connection()
 
         dumped_value = ujson.dumps(value)

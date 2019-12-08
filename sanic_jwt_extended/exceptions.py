@@ -3,7 +3,7 @@ class JWTExtendedException(Exception):
     Base except which all sanic_jwt_extended errors extend
     """
 
-    pass
+    ...
 
 
 class JWTDecodeError(JWTExtendedException):
@@ -11,7 +11,7 @@ class JWTDecodeError(JWTExtendedException):
     An error decoding a JWT
     """
 
-    pass
+    ...
 
 
 class InvalidHeaderError(JWTExtendedException):
@@ -19,7 +19,7 @@ class InvalidHeaderError(JWTExtendedException):
     An error getting header information from a request
     """
 
-    pass
+    ...
 
 
 class NoAuthorizationError(JWTExtendedException):
@@ -27,7 +27,7 @@ class NoAuthorizationError(JWTExtendedException):
     An error raised when no authorization token was found in a protected endpoint
     """
 
-    pass
+    ...
 
 
 class WrongTokenError(JWTExtendedException):
@@ -36,7 +36,7 @@ class WrongTokenError(JWTExtendedException):
     or vice versa
     """
 
-    pass
+    ...
 
 
 class RevokedTokenError(JWTExtendedException):
@@ -44,7 +44,7 @@ class RevokedTokenError(JWTExtendedException):
     Error raised when a revoked token attempt to access a protected endpoint
     """
 
-    pass
+    ...
 
 
 class FreshTokenRequiredError(JWTExtendedException):
@@ -53,7 +53,7 @@ class FreshTokenRequiredError(JWTExtendedException):
     protected by jwt_required with fresh_required is True
     """
 
-    pass
+    ...
 
 
 class AccessDeniedError(JWTExtendedException):
@@ -62,7 +62,7 @@ class AccessDeniedError(JWTExtendedException):
     protected by jwt_required with not allowed role
     """
 
-    pass
+    ...
 
 
 class ConfigurationConflictError(JWTExtendedException):
@@ -70,8 +70,8 @@ class ConfigurationConflictError(JWTExtendedException):
     Error raised when trying to use allow and deny option together in jwt_required
     """
 
-    pass
+    ...
 
 
 class CSRFError(JWTExtendedException):
-    pass
+    ...

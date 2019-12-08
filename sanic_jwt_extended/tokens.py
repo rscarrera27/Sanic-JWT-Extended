@@ -1,7 +1,7 @@
 import datetime
 import json
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 import jwt
@@ -70,7 +70,9 @@ class Token:
         except Exception:
             raise JWTDecodeError(f"Wrong timestamp for 'nbf' or/and 'iat'")
 
-        self.public_claims = self._get_public_claims() if JWT.config.public_claim_namespace else {}
+        self.public_claims = (
+            self._get_public_claims() if JWT.config.public_claim_namespace else {}
+        )
         self.private_claims = self._get_private_claims()
 
     def _get_private_claims(self):

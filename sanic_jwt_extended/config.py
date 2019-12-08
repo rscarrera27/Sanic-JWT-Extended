@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from json import JSONDecoder, JSONEncoder
-from typing import Any, Optional, Tuple, Type, Union, Dict
+from json import JSONEncoder
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from sanic_jwt_extended.blacklist import BlacklistABC
 

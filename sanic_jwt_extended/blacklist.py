@@ -1,9 +1,5 @@
 import warnings
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Dict, Any
-
-import aioredis
 
 from sanic_jwt_extended.redis import RedisConnection
 
@@ -33,7 +29,6 @@ class InMemoryBlacklist(BlacklistABC):
 
 
 class RedisBlacklist(BlacklistABC):
-
     def __init__(self, connection_info):
         self.connection_info = connection_info
 

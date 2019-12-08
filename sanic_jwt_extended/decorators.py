@@ -6,17 +6,20 @@ from sanic.request import Request
 from sanic_jwt_extended.exceptions import (
     AccessDeniedError,
     ConfigurationConflictError,
+    CSRFError,
     FreshTokenRequiredError,
     InvalidHeaderError,
     NoAuthorizationError,
     RevokedTokenError,
     WrongTokenError,
-    CSRFError)
+)
 from sanic_jwt_extended.jwt_manager import JWT
 from sanic_jwt_extended.tokens import Token
+
 try:
     from hmac import compare_digest
 except ImportError:
+
     def compare_digest(a, b):
         if isinstance(a, str):
             a = a.encode("utf-8")
@@ -73,7 +76,9 @@ def _get_raw_jwt_from_request(request, is_access=True):
 
 
 def _get_raw_jwt_from_headers(request, is_access):
-    header_key = JWT.config.jwt_header_key if is_access else JWT.config.refresh_jwt_header_key
+    header_key = (
+        JWT.config.jwt_header_key if is_access else JWT.config.refresh_jwt_header_key
+    )
     header_prefix = JWT.config.jwt_header_prefix
 
     token_header = request.headers.get(header_key)
@@ -105,7 +110,9 @@ def _get_raw_jwt_from_query_params(request, _):
 
 def _get_raw_jwt_from_cookies(request, is_access):
     cookie_key = JWT.config.jwt_cookie if is_access else JWT.config.refresh_jwt_cookie
-    csrf_header_key = JWT.config.jwt_csrf_header if is_access else JWT.config.refresh_jwt_csrf_header
+    csrf_header_key = (
+        JWT.config.jwt_csrf_header if is_access else JWT.config.refresh_jwt_csrf_header
+    )
 
     encoded_token = request.cookies.get(cookie_key)
     csrf_value = None

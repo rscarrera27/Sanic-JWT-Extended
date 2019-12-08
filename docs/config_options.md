@@ -51,10 +51,13 @@ You can not change option after close initialize context manger!
 
 ## Header configs
 
-| key                 | description                                   | type   | default           |
-|:--------------------|:----------------------------------------------|:-------|:------------------|
-| `jwt_header_key`    | What header to look for the JWT in a request. | string | `"Authorization"` |
-| `jwt_header_prefix` | What type of header the JWT is in.            | string | `"Bearer"`        |
+| key                         | description                                           | type   | default             |
+|:----------------------------|:------------------------------------------------------|:-------|:--------------------|
+| `jwt_header_key`            | What header to look for the access JWT in a request.  | string | `"Authorization"`   |
+| `refresh_jwt_header_key`    | What header to look for the refresh JWT in a request. | string | `"X-Refresh-Token"` |
+| `jwt_header_prefix`         | What type of header the JWT is in.                    | string | `"Bearer"`          |
+| `refresh_jwt_header_prefix` | What type of header the JWT is in.                    | string | `"Bearer"`          |
+
 
 ## Query parameter options
 

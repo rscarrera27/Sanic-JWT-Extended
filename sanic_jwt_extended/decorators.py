@@ -56,7 +56,7 @@ def _get_raw_jwt_from_headers(request, is_access):
     token_header = request.headers.get(header_key)
 
     if not token_header:
-        raise NoAuthorizationError(f"Missing {header_key} header")
+        raise NoAuthorizationError(f'Missing header "{header_key}"')
 
     parts: List[str] = token_header.split()
 
@@ -74,7 +74,7 @@ def _get_raw_jwt_from_query_params(request, is_access):
     encoded_token = request.args.get(JWT.config.jwt_query_param_name)
     if not encoded_token:
         raise NoAuthorizationError(
-            f"Missing {JWT.config.jwt_query_param_name} query parameter"
+            f'Missing query parameter "{JWT.config.jwt_query_param_name}"'
         )
 
     return encoded_token

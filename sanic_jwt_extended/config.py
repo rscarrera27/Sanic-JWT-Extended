@@ -32,7 +32,9 @@ class Config:
 
     # JWT in headers configs
     jwt_header_key: str = "Authorization"
+    refresh_jwt_header_key: str = "X-Refresh-Token"
     jwt_header_prefix: str = "Bearer"
+    refresh_jwt_header_prefix: str = "Bearer"
 
     # JWT in query params option
     jwt_query_param_name: str = "jwt"

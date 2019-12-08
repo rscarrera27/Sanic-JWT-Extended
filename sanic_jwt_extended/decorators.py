@@ -24,7 +24,7 @@ def _get_request(args) -> Request:
     return request
 
 
-def _get_raw_jwt_from_request(request: Request) -> str:
+def _get_raw_jwt_from_request(request, is_access=True) -> str:
     functions: List[Callable[[Request], str]] = []
 
     for eligible_location in JWT.config.token_location:
@@ -49,8 +49,8 @@ def _get_raw_jwt_from_request(request: Request) -> str:
     return raw_jwt
 
 
-def _get_raw_jwt_from_headers(request):
-    header_key = JWT.config.jwt_header_key
+def _get_raw_jwt_from_headers(request, is_access):
+    header_key = JWT.config.jwt_header_key if is_access else JWT.config.refresh_jwt_header_key
     header_prefix = JWT.config.jwt_header_prefix
 
     token_header = request.headers.get(header_key)
@@ -70,7 +70,7 @@ def _get_raw_jwt_from_headers(request):
     return encoded_token
 
 
-def _get_raw_jwt_from_query_params(request):
+def _get_raw_jwt_from_query_params(request, is_access):
     encoded_token = request.args.get(JWT.config.jwt_query_param_name)
     if not encoded_token:
         raise NoAuthorizationError(
@@ -80,11 +80,7 @@ def _get_raw_jwt_from_query_params(request):
     return encoded_token
 
 
-def _get_raw_jwt_from_cookie(request):
-
-
-
-def _get_raw_jwt_from_cookies(request):
+def _get_raw_jwt_from_cookies(request, is_access):
     pass
 
 

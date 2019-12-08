@@ -17,3 +17,6 @@ repository: NovemberOscar/Sanic-JWT-Extended
 
 plugins:
   - "jekyll-github-metadata"
+  - jekyll-seo-tag
+
+ga_tracking: UA-143368612-3

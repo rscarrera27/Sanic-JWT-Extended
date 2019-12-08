@@ -106,7 +106,6 @@ def _get_raw_jwt_from_query_params(request, _):
 def _get_raw_jwt_from_cookies(request, is_access):
     cookie_key = JWT.config.jwt_cookie if is_access else JWT.config.refresh_jwt_cookie
     csrf_header_key = JWT.config.jwt_csrf_header if is_access else JWT.config.refresh_jwt_csrf_header
-    csrf_field_key = JWT.config.jwt_csrf_field if is_access else JWT.config.refresh_jwt_csrf_field
 
     encoded_token = request.cookies.get(cookie_key)
     csrf_value = None
@@ -116,8 +115,6 @@ def _get_raw_jwt_from_cookies(request, is_access):
 
     if JWT.config.csrf_protect and request.method in JWT.config.csrf_request_methods:
         csrf_value = request.headers.get(csrf_header_key)
-        if not csrf_value and JWT.config.csrf_check_form:
-            csrf_value = request.form.get(csrf_field_key)
 
         if not csrf_value:
             raise CSRFError("Missing CSRF token")

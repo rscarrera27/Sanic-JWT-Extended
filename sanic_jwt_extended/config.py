@@ -45,9 +45,6 @@ class Config:
     csrf_request_methods: Tuple[str] = ('POST', 'PUT', 'PATCH', 'DELETE')
     jwt_csrf_header: str = 'X-CSRF-Token'
     refresh_jwt_csrf_header: str = 'X-CSRF-Token'
-    csrf_check_form: bool = False
-    jwt_csrf_field: str = 'csrf_token'
-    refresh_jwt_csrf_field: str = 'csrf_token'
 
     # JWT in query params option
     jwt_query_param_name: str = "jwt"

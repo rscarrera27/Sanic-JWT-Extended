@@ -1,6 +1,7 @@
 title: "Sanic-JWT-Extended"
 description: >- # this means to ignore newlines until "baseurl:"
   🛡An open source Sanic extension that provides JWT support 🛡
+url: "https://sanic-jwt-extended.seonghyeon.dev"
 github_username: NovemberOscar
 
 theme: "just-the-docs"
@@ -18,5 +19,6 @@ repository: NovemberOscar/Sanic-JWT-Extended
 plugins:
   - "jekyll-github-metadata"
   - jekyll-seo-tag
+  - jekyll-sitemap
 
 ga_tracking: UA-143368612-3

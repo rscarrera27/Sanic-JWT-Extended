@@ -3,12 +3,13 @@
 <div align="center"> 
 
 [![Downloads](https://pepy.tech/badge/sanic-jwt-extended)](https://pepy.tech/project/sanic-jwt-extended)
-![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg)
+![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg?label=stable)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/NovemberOscar/Sanic-JWT-Extended?include_prereleases&label=latest)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
-![code style](https://img.shields.io/badge/code%20style-black-black.svg)
-[![Documentation Status](https://api.netlify.com/api/v1/badges/c2cf1ea1-bae1-448f-b52c-0dea6516446a/deploy-status)](https://sanic-jwt-extended.seonghyeon.dev)
 ![Tests](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Tests/badge.svg)
 ![Deploy](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Upload%20to%20PyPI/badge.svg)
+[![Documentation Status](https://api.netlify.com/api/v1/badges/c2cf1ea1-bae1-448f-b52c-0dea6516446a/deploy-status)](https://sanic-jwt-extended.seonghyeon.dev)
+![code style](https://img.shields.io/badge/code%20style-black-black.svg)
 
 </div>
 

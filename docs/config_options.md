@@ -58,6 +58,22 @@ You can not change option after close initialize context manger!
 | `jwt_header_prefix`         | What type of header the JWT is in.                    | string | `"Bearer"`          |
 | `refresh_jwt_header_prefix` | What type of header the JWT is in.                    | string | `"Bearer"`          |
 
+## Cookie configs
+
+| key                  | description                                         | type   | default                  |
+|:---------------------|:----------------------------------------------------|:-------|:-------------------------|
+| `jwt_cookie`         | The name of the cookie that holds the access token. | string | `"access_token_cookie"`  |
+| `refresh_jwt_cookie` | The name of the cookie that holds the access token. | string | `"refresh_token_cookie"` |
+| `csrf_protect`       | Enable/disable CSRF protection when using cookies.  | bool   | `True`                   |
+
+## CSRF configs
+
+| key                       | description                                                                            | type          | default                              |
+|:--------------------------|:---------------------------------------------------------------------------------------|:--------------|:-------------------------------------|
+| `csrf_request_methods`    | The request types that will use CSRF protection.                                       | Tuple[string] | `('POST', 'PUT', 'PATCH', 'DELETE')` |
+| `jwt_csrf_header`         | Name of the header that should contain the CSRF double submit value for access tokens. | string        | `"X-CSRF-Token"`                     |
+| `refresh_jwt_csrf_header` | Name of the header that should contain the CSRF double submit value for access tokens. | string        | `"X-CSRF-Token"`                     |
+
 
 ## Query parameter options
 

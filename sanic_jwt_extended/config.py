@@ -36,6 +36,19 @@ class Config:
     jwt_header_prefix: str = "Bearer"
     refresh_jwt_header_prefix: str = "Bearer"
 
+    # JWT in cookies configs
+    jwt_cookie: str = 'access_token_cookie'
+    refresh_jwt_cookie: str = 'refresh_token_cookie'
+    csrf_protect: bool = True
+
+    # CSRF configs
+    csrf_request_methods: Tuple[str] = ('POST', 'PUT', 'PATCH', 'DELETE')
+    jwt_csrf_header: str = 'X-CSRF-Token'
+    refresh_jwt_csrf_header: str = 'X-CSRF-Token'
+    csrf_check_form: bool = False
+    jwt_csrf_field: str = 'csrf_token'
+    refresh_jwt_csrf_field: str = 'csrf_token'
+
     # JWT in query params option
     jwt_query_param_name: str = "jwt"
 

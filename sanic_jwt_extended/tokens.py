@@ -22,6 +22,7 @@ class Token:
     role: Optional[str] = field(init=False, default=None)
     fresh: Optional[bool] = field(init=False, default=None)
     identity: str = field(init=False)
+    csrf: str = field(init=False, default=None)
 
     # Registered claims
     iss: Optional[str] = field(init=False, default=None)
@@ -42,6 +43,7 @@ class Token:
         self.type = self._get_type()
         self.role = self.raw_data.get("role") if JWT.config.use_acl else None
         self.fresh = self.raw_data.get("fresh") if self.type == "access" else None
+        self.csrf = self.raw_data.get("csrf")
 
         try:
             self.iss = self.raw_data.get("iss")

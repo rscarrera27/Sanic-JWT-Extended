@@ -71,3 +71,7 @@ class ConfigurationConflictError(JWTExtendedException):
     """
 
     pass
+
+
+class CSRFError(JWTExtendedException):
+    pass

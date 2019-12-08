@@ -31,4 +31,10 @@ jobs:
     - name: Test
       run: |
         source $HOME/.poetry/env
-        poetry run pytest
+        poetry run pytest --cov=sanic_jwt_extended tests/ --cov-report=xml
+    - name: Upload coverage to Codecov  
+      uses: codecov/codecov-action@v1
+      with: 
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests

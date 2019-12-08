@@ -6,6 +6,9 @@
 ![PyPI](https://img.shields.io/pypi/v/sanic-jwt-extended.svg?label=stable)
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/NovemberOscar/Sanic-JWT-Extended?include_prereleases&label=latest)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5fe125514047445b80d6e3e75c2a7dbe)](https://www.codacy.com/manual/NovemberOscar/Sanic-JWT-Extended?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=NovemberOscar/Sanic-JWT-Extended&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/368dbc256c4837087c1e/maintainability)](https://codeclimate.com/github/NovemberOscar/Sanic-JWT-Extended/maintainability)
 ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
 
 [![Tests](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Tests/badge.svg)](https://github.com/NovemberOscar/Sanic-JWT-Extended/actions?query=workflow%3ATests)

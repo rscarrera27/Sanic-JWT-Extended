@@ -8,8 +8,8 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sanic-jwt-extended.svg)
 ![code style](https://img.shields.io/badge/code%20style-black-black.svg)
 
-![Tests](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Tests/badge.svg)
-![Deploy](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Upload%20to%20PyPI/badge.svg)
+[![Tests](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Tests/badge.svg)](https://github.com/NovemberOscar/Sanic-JWT-Extended/actions?query=workflow%3ATests)
+[![Deploy](https://github.com/NovemberOscar/Sanic-JWT-Extended/workflows/Upload%20to%20PyPI/badge.svg)](https://github.com/NovemberOscar/Sanic-JWT-Extended/actions?query=workflow%3A%22Upload+to+PyPI%22)
 [![Netlify](https://img.shields.io/netlify/c2cf1ea1-bae1-448f-b52c-0dea6516446a?label=docs)](https://app.netlify.com/sites/sanic-jwt-extended/deploys)
 
 </div>

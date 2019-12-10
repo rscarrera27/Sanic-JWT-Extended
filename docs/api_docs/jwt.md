@@ -118,20 +118,6 @@ A classmethod to create new refresh token
 - str - An encoded refresh token
 {: .pl-10}
 
-
-### *async def* **revoke**
-{: .pl-6 .text-purple-100 .text-mono}
-
-A classmethod to revoke specific token. revoked token will be stored to designated blacklist.
-{: .pl-10}
-
-#### Parmeters
-{: .pl-10 .fs-4 .text-purple-000}
-
-- `identity` <sup>required</sup> - A token object to revoke
-{: .pl-10}
-
-
 ---
 
 ## Signature of JWT
@@ -172,8 +158,5 @@ class JWT:
         aud: str = ...,
         nbf: datetime.datetime = ...,
     ) -> str: ...
-
-    @classmethod
-    async def revoke(cls: JWT, token: Token): ...
 
 ```

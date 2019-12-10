@@ -86,6 +86,18 @@ This object has **no** public methods.
 {: .pl-6 .text-purple-100 .text-mono}
 - Private claims
 
+### *async def* **revoke**
+{: .pl-6 .text-purple-100 .text-mono}
+
+A classmethod to revoke specific token. revoked token will be stored to designated blacklist.
+{: .pl-10}
+
+#### Parmeters
+{: .pl-10 .fs-4 .text-purple-000}
+
+- `token` <sup>required</sup> - A token object to revoke
+{: .pl-10}
+
 ## Signature of Token
 
 ```python
@@ -105,5 +117,6 @@ class Token:
     jti: uuid.UUID = ...
     public_claims: Dict[str, Any] = ...
     private_claims: Dict[str, Any] = ...
+    async def revoke(self, token: Token): ...
 ```
 

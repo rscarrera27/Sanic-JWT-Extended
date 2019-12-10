@@ -83,10 +83,10 @@ You can not change option after close initialize context manger!
 
 ## Access control configs
 
-| key         | description                    | type   | default      |
-|:------------|:-------------------------------|:-------|:-------------|
-| `use_acl`   | Enable/disable access control  | bool   | `False`      |
-| `acl_claim` | Which claim to store role info | string | `permission` |
+| key         | description                    | type   | default |
+|:------------|:-------------------------------|:-------|:--------|
+| `use_acl`   | Enable/disable access control  | bool   | `False` |
+| `acl_claim` | Which claim to store role info | string | `role`  |
 
 ## Blacklist configs
 

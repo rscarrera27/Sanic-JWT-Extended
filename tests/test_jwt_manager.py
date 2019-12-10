@@ -16,12 +16,13 @@ class TestJWT:
     @pytest.mark.parametrize("config", [
         {"secret_key": "super-secret"},
         {"algorithm": "RS256", "public_key": "pub1ic", "private_key": "pr1vate"},
+        {"secret_key": "super-secret", "use_blacklist": True}
     ])
     @pytest.mark.parametrize("handler", [
         {"expired_signature": lambda r, e: ...}
     ])
     # fmt: on
-    def test_initialize(self, app, config, handler):
+    def test_initialize(self, app, recwarn, config, handler):
         with JWT.initialize(app) as initialize:
             for attr, value in config.items():
                 setattr(initialize.config, attr, value)
@@ -30,6 +31,9 @@ class TestJWT:
 
         with pytest.raises(RuntimeError):
             JWT.config.algorithm = "HS512"
+
+        if config.get("use_blacklist"):
+            assert len(recwarn) == 2
 
         for attr, value in config.items():
             assert getattr(initialize.config, attr) == value
@@ -41,6 +45,7 @@ class TestJWT:
     @pytest.mark.parametrize("config", [
         {},
         {"algorithm": "RS256", "public_key": "pub1ic", "secret_key": "s3cr3t"},
+        {"algorithm": "RS256", "private_key": "s3cr3t"},
     ])  # fmt: on
     def test_initialize_fail(self, app, config):
         with pytest.raises(ConfigurationConflictError):
@@ -52,6 +57,7 @@ class TestJWT:
     @pytest.mark.parametrize("args", [
         {"identity": "user"},
         {"identity": "user", "fresh": True},
+        {"identity": "user", "role": "ADMIN"},
         {"identity": "user", "expires_delta": False},
         {"identity": "user", "public_claims": {"user_id": 0, "misc": {"foo": "bar"}}},
         {"identity": "user", "private_claims": {"secret_info": "secret"}}
@@ -60,6 +66,7 @@ class TestJWT:
         with JWT.initialize(app) as manager:
             manager.config.secret_key = "secret"
             manager.config.public_claim_namespace = "https://seonghyeon.dev/"
+            manager.config.use_acl = True
 
         raw_token = JWT.create_access_token(**args)
         token = Token(raw_token)

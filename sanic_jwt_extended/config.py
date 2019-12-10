@@ -51,7 +51,7 @@ class Config:
 
     # ACL config
     use_acl: bool = False
-    acl_claim: str = "permission"
+    acl_claim: str = "role"
 
     # Blacklist config
     use_blacklist: bool = False

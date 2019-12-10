@@ -41,7 +41,7 @@ class Token:
         self.raw_data = self._decode_jwt()
 
         self.type = self._get_type()
-        self.role = self.raw_data.get("role") if JWT.config.use_acl else None
+        self.role = self.raw_data.get(JWT.config.acl_claim) if JWT.config.use_acl else None
         self.fresh = self.raw_data.get("fresh") if self.type == "access" else None
         self.csrf = self.raw_data.get("csrf")
 

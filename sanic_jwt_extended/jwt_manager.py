@@ -212,11 +212,3 @@ class JWT:
         refresh_token = cls._encode_jwt("refresh", payload, expires_delta)
 
         return refresh_token
-
-    @classmethod
-    async def revoke(cls, token):
-        if not cls.config.use_blacklist:
-            raise ConfigurationConflictError(
-                "To revoke token, you should enable blacklist"
-            )
-        await cls.blacklist.register(token)

@@ -8,7 +8,7 @@ import jwt
 from flatten_dict import unflatten
 from jwt.utils import base64url_decode
 
-from sanic_jwt_extended.exceptions import JWTDecodeError
+from sanic_jwt_extended.exceptions import JWTDecodeError, ConfigurationConflictError
 from sanic_jwt_extended.jwt_manager import JWT
 
 
@@ -117,3 +117,11 @@ class Token:
         jwt_data = jwt.decode(self.raw_jwt, secret, algorithms=[algorithm])
 
         return jwt_data
+
+    async def revoke(self):
+        if not JWT.config.use_blacklist:
+            raise ConfigurationConflictError(
+                "To revoke token, you should enable blacklist"
+            )
+
+        await JWT.blacklist.register(self)

@@ -3,7 +3,6 @@ layout: default
 title: Usages
 nav_order: 2
 has_children: true
-permalink: /docs/usage
 ---
 
 # Usages

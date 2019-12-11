@@ -46,10 +46,13 @@ There is nothing to configure to check revoked tokens. decorator automatically r
 
 ## Revoke Tokens
 
-If you want to revoke specific token, just pass token object to `JWT.revoke`.
+If you want to revoke specific token, just use `revoke` method of passedd token object.
 
 ```python
-JWT.revoke(token)
+@app.route("/protected", methods=["GET"])
+@jwt_optional
+async def protected(request, token):
+    await token.revoke()
 ```
 
 ## Built-In Blacklist Class
@@ -91,10 +94,10 @@ class FooBarBlacklist(BlacklistABC):
     def __init__(self):
         pass
 
-    def register(self, token: Token):
+    async def register(self, token: Token):
         pass
 
-    def is_blacklisted(self, token: Token):
+    async def is_blacklisted(self, token: Token):
         pass
 ```
 

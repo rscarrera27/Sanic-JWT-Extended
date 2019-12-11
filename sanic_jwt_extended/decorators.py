@@ -18,7 +18,7 @@ from sanic_jwt_extended.tokens import Token
 
 try:
     from hmac import compare_digest
-except ImportError:
+except ImportError:  # pragma: no cover
 
     def compare_digest(a, b):
         if isinstance(a, str):

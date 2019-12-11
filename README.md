@@ -64,7 +64,7 @@ this will install dependencies with poetry. if poetry not found, will install po
 
 ### Development
 - `make format`: this will format your code with `isort` and `black`
-- `make check`: this will lint your code with `isort`, `black`, and `pylint`
+- `make check`: this will lint your code with `isort`, `black`, `mypy` and `pylint`
 - `make clean`: this will remove temporary things.
 
 ### Commit Convention
@@ -78,6 +78,7 @@ this will install dependencies with poetry. if poetry not found, will install po
 
 ### Testing
 ```shell script
+$ make check  # check convention and type
 $ poetry run pytest
 ```
 

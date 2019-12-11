@@ -61,6 +61,12 @@ async def test_jwt_required_fail(test_cli):
 
     # Wrong token type
     refresh_token = JWT.create_refresh_token("user")
-    resp = await test_cli.get("/fresh", headers={JWT.config.jwt_header_key: f"{JWT.config.jwt_header_prefix} {refresh_token}"})
+    resp = await test_cli.get("/protected", headers={JWT.config.jwt_header_key: f"{JWT.config.jwt_header_prefix} {refresh_token}"})
     assert resp.status == 422
+    assert await resp.json() == {"msg": DunnoValue(str)}
+
+    # Check freshness
+    refresh_token = JWT.create_access_token("user")
+    resp = await test_cli.get("/fresh", headers={JWT.config.jwt_header_key: f"{JWT.config.jwt_header_prefix} {refresh_token}"})
+    assert resp.status == 401
     assert await resp.json() == {"msg": DunnoValue(str)}

@@ -71,6 +71,19 @@ this will install dependencies with poetry. if poetry not found, will install po
 ```
 <{verb}>({scope}): {summary}
 ```
+#### Example
+- test: `<test>(foobar): Add TCs about FooBar`
+- fix: `<fix>(#12): Fix SpamEgg`
+- normal: `<feat>(cookie): Add cookie writer`
 
 ### Testing
-- **TBD**
+```shell script
+$ poetry run pytest
+```
+
+with coverage:
+```shell script
+$ poetry run pytest --cov=sanic_jwt_extended tests/
+```
+
+**Make sure you wrote TCs about your work!**

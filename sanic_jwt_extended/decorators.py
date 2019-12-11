@@ -197,7 +197,7 @@ def jwt_optional(function):
 
             if token_obj.type != "access":
                 raise WrongTokenError("Only access tokens are allowed")
-        except NoAuthorizationError:
+        except (NoAuthorizationError, InvalidHeaderError):
             pass
 
         kwargs["token"] = token_obj

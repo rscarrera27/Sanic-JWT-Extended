@@ -212,7 +212,7 @@ def refresh_jwt_required(function=None, *, allow=None, deny=None):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
             request = _get_request(args)
-            raw_jwt, csrf_value = _get_raw_jwt_from_request(request)
+            raw_jwt, csrf_value = _get_raw_jwt_from_request(request, is_access=False)
 
             token_obj = Token(raw_jwt)
 

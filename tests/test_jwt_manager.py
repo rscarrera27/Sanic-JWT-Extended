@@ -90,5 +90,3 @@ class TestJWT:
 
         with pytest.raises(ConfigurationConflictError):
             JWT.create_access_token(**args)
-
-

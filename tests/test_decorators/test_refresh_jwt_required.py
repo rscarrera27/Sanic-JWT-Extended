@@ -33,7 +33,9 @@ async def test_refresh_jwt_required(test_cli):
 
     resp = await test_cli.get(
         '/protected',
-        headers={JWT.config.refresh_jwt_header_key: f"{JWT.config.refresh_jwt_header_prefix} {token}"}
+        headers={
+            JWT.config.refresh_jwt_header_key: f"{JWT.config.refresh_jwt_header_prefix} {token}"
+        },
     )
 
     print(await resp.json())
@@ -49,14 +51,18 @@ async def test_refresh_jwt_required_fail(test_cli):
     # Bad authorization header key
     token = JWT.create_refresh_token("user")
     resp = await test_cli.get(
-        '/protected',
-        headers={JWT.config.refresh_jwt_header_key: f"Token {token}"}
+        '/protected', headers={JWT.config.refresh_jwt_header_key: f"Token {token}"}
     )
     assert resp.status == 422
     assert await resp.json() == {"msg": DunnoValue(str)}
 
     # Wrong token type
     access_token = JWT.create_access_token("user")
-    resp = await test_cli.get("/protected", headers={JWT.config.refresh_jwt_header_key: f"{JWT.config.refresh_jwt_header_prefix} {access_token}"})
+    resp = await test_cli.get(
+        "/protected",
+        headers={
+            JWT.config.refresh_jwt_header_key: f"{JWT.config.refresh_jwt_header_prefix} {access_token}"
+        },
+    )
     assert resp.status == 422
     assert await resp.json() == {"msg": DunnoValue(str)}

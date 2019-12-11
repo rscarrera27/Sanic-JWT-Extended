@@ -8,7 +8,7 @@ import jwt
 from flatten_dict import unflatten
 from jwt.utils import base64url_decode
 
-from sanic_jwt_extended.exceptions import JWTDecodeError, ConfigurationConflictError
+from sanic_jwt_extended.exceptions import ConfigurationConflictError, JWTDecodeError
 from sanic_jwt_extended.jwt_manager import JWT
 
 
@@ -41,7 +41,9 @@ class Token:
         self.raw_data = self._decode_jwt()
 
         self.type = self._get_type()
-        self.role = self.raw_data.get(JWT.config.acl_claim) if JWT.config.use_acl else None
+        self.role = (
+            self.raw_data.get(JWT.config.acl_claim) if JWT.config.use_acl else None
+        )
         self.fresh = self.raw_data.get("fresh") if self.type == "access" else None
         self.csrf = self.raw_data.get("csrf")
 
@@ -84,7 +86,8 @@ class Token:
         }
         if JWT.config.public_claim_namespace:
             private_claims = {
-                k: v for k, v in private_claims.items()
+                k: v
+                for k, v in private_claims.items()
                 if not k.startswith(JWT.config.public_claim_namespace)
             }
 

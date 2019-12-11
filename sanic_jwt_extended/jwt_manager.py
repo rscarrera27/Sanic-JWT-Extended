@@ -156,7 +156,9 @@ class JWT:
 
         if private_claims:
             private_claim_prefix = (
-                cls.config.private_claim_prefix if cls.config.private_claim_prefix else ""
+                cls.config.private_claim_prefix
+                if cls.config.private_claim_prefix
+                else ""
             )
 
             for k, v in private_claims.items():

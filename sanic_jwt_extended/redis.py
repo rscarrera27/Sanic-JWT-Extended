@@ -4,7 +4,7 @@ import aioredis
 import ujson
 
 
-class RedisConnection:
+class RedisConnection:  # pragma: no cover
     redis: Optional[aioredis.Redis] = None
     connection_info: Dict[str, Any]
 

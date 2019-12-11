@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from sanic_jwt_extended.redis import RedisConnection
 
 
-class BlacklistABC(ABC):
+class BlacklistABC(ABC):  # pragma: no cover
     @abstractmethod
     async def register(self, token):
         pass
@@ -28,7 +28,7 @@ class InMemoryBlacklist(BlacklistABC):
         return token.jti in self.blacklist
 
 
-class RedisBlacklist(BlacklistABC):
+class RedisBlacklist(BlacklistABC):  # pragma: no cover
     def __init__(self, connection_info):
         self.connection_info = connection_info
 

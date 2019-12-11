@@ -71,6 +71,8 @@ class TestJWT:
         raw_token = JWT.create_access_token(**args)
         token = Token(raw_token)
 
+        assert token.type == "access"
+
         for k, v in args.items():
             if k == "expires_delta":
                 assert getattr(token, "exp") == (v if v is not False else None)

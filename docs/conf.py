@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.abspath("../venv"))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "sphinx.ext.viewcode"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "sphinx.ext.viewcode", 'versionwarning.extension']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -280,16 +280,19 @@ texinfo_documents = [
     )
 ]
 
+
 versionwarning_messages = {
     "latest": (
-        "0.x version is not supported anymore"
-        'For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
+        '0.x version is not supported anymore. and we does not use readthedocs anymore.'
+        ' For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
     ),
     "stable": (
-        "0.x version is not supported anymore"
-        'For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
+        '0.x version is not supported anymore. and we does not use readthedocs anymore.'
+        ' For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
     ),
 }
+
+versionwarning_body_selector = "div.document"
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []

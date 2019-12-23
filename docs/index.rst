@@ -9,7 +9,7 @@ Welcome to Sanic-JWT-Extended's documentation!
 .. warning::
    Using 0.x version is highly **not** recommended. 0.x version is not maintained anymore
    and documentation for new version doesn't use readthedocs anymore. for the new documentation,
-   see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>
+   visit https://sanic-jwt-extended.seonghyeon.dev/
 
 Contents:
 

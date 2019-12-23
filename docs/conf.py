@@ -280,6 +280,17 @@ texinfo_documents = [
     )
 ]
 
+versionwarning_messages = {
+    "latest": (
+        "0.x version is not supported anymore"
+        'For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
+    ),
+    "stable": (
+        "0.x version is not supported anymore"
+        'For the 1.x version documentation, see <a href="https://sanic-jwt-extended.seonghyeon.dev/">here</a>.'
+    ),
+}
+
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []
 

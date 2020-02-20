@@ -64,13 +64,7 @@ this will install dependencies with poetry. if poetry not found, will install po
 - `make clean`: this will remove temporary things.
 
 ### Commit Convention
-```
-<{verb}>({scope}): {summary}
-```
-#### Example
-- test: `<test>(foobar): Add TCs about FooBar`
-- fix: `<fix>(#12): Fix SpamEgg`
-- normal: `<feat>(cookie): Add cookie writer`
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ### Testing
 ```shell script

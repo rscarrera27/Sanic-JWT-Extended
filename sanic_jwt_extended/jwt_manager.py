@@ -156,7 +156,7 @@ class JWT:
 
         if private_claims:
             private_claim_prefix = (
-                cls.config.private_claim_prefix
+                f"{cls.config.private_claim_prefix}_"
                 if cls.config.private_claim_prefix
                 else ""
             )
@@ -184,9 +184,6 @@ class JWT:
         aud=None,
         nbf=None,
     ):
-        private_claim_prefix = (
-            cls.config.private_claim_prefix if cls.config.private_claim_prefix else ""
-        )
         payload = {"iss": iss, "sub": identity, "aud": aud, "nbf": nbf}
 
         if role:
@@ -206,6 +203,12 @@ class JWT:
                 payload[cls.config.public_claim_namespace + k] = v
 
         if private_claims:
+            private_claim_prefix = (
+                f"{cls.config.private_claim_prefix}_"
+                if cls.config.private_claim_prefix
+                else ""
+            )
+
             for k, v in private_claims.items():
                 payload[f"{private_claim_prefix}.{k}"] = v
 

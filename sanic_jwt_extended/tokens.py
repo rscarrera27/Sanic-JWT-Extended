@@ -79,11 +79,16 @@ class Token:
 
     def _get_private_claims(self):
         private_claims = {
-            k.replace(f"{JWT.config.private_claim_prefix}.", ""): v
+            k: v
             for k, v in self.raw_data.items()
             if k.startswith(JWT.config.private_claim_prefix)
             and k not in ("iss", "sub", "aud", "exp", "nbf", "iat", "jti")
         }
+        if JWT.config.private_claim_prefix:
+            private_claims = {
+                k.replace(f"{JWT.config.private_claim_prefix}_", ""): v
+                for k, v in private_claims.items()
+            }
         if JWT.config.public_claim_namespace:
             private_claims = {
                 k: v

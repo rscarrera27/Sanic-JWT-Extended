@@ -162,7 +162,9 @@ def jwt_required(
             if deny and token_obj.role in deny:
                 raise AccessDeniedError("You are not allowed to access here")
 
-            if JWT.config.use_blacklist and await JWT.blacklist.is_blacklisted(token_obj):
+            if JWT.config.use_blacklist and await JWT.blacklist.is_blacklisted(
+                token_obj
+            ):
                 raise RevokedTokenError("Token has been revoked")
 
             kwargs["token"] = token_obj
@@ -228,7 +230,9 @@ def refresh_jwt_required(function=None, *, allow=None, deny=None):
             if deny and token_obj.role in deny:
                 raise AccessDeniedError("You are not allowed to refresh in here")
 
-            if JWT.config.use_blacklist and await JWT.blacklist.is_blacklisted(token_obj):
+            if JWT.config.use_blacklist and await JWT.blacklist.is_blacklisted(
+                token_obj
+            ):
                 raise RevokedTokenError("Token has been revoked")
 
             kwargs["token"] = token_obj

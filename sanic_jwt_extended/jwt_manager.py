@@ -206,7 +206,7 @@ class JWT:
                 payload[cls.config.public_claim_namespace + k] = v
 
         if private_claims:
-            for k, v in private_claims:
+            for k, v in private_claims.items():
                 payload[f"{private_claim_prefix}.{k}"] = v
 
         if expires_delta is None:

@@ -213,7 +213,7 @@ class JWT:
                 payload[f"{private_claim_prefix}.{k}"] = v
 
         if expires_delta is None:
-            expires_delta = cls.config.access_token_expires
+            expires_delta = cls.config.refresh_token_expires
 
         refresh_token = cls._encode_jwt("refresh", payload, expires_delta)
 

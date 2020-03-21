@@ -18,11 +18,11 @@ You can not change option after close initialize context manger!
 
 ## Secrets
 
-| key          | description                           | type   | default |
-|:-------------|:--------------------------------------|:-------|:--------|
-| `secret_key` | encode/decode key for `HS*` algorithm | string | `None`  |
-| `public_key` | decode key for `RS*` algorithm        | string | `None`  |
-| `secret_key` | encode key for `RS*` algorithm        | string | `None`  |
+| key           | description                           | type   | default |
+|:--------------|:--------------------------------------|:-------|:--------|
+| `secret_key`  | encode/decode key for `HS*` algorithm | string | `None`  |
+| `public_key`  | decode key for `RS*` algorithm        | string | `None`  |
+| `private_key` | encode key for `RS*` algorithm        | string | `None`  |
 
 ## Default values for reserved claims
 

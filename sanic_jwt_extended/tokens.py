@@ -127,7 +127,12 @@ class Token:
             else JWT.config.public_key
         )
 
-        jwt_data = jwt.decode(self.raw_jwt, secret, algorithms=[algorithm])
+        jwt_data = jwt.decode(
+            self.raw_jwt,
+            secret,
+            algorithms=[algorithm],
+            options={"verify_iss": False, "verify_aud": False},
+        )
 
         return jwt_data
 

@@ -109,7 +109,7 @@ class JWT:
             reserved_claims["exp"] = iat + expires_delta
 
         if "cookies" in cls.config.token_location and cls.config.csrf_protect:
-            reserved_claims["csrf"] = jti
+            reserved_claims["csrf"] = uuid.uuid4().hex
 
         payload.update(reserved_claims)
         payload = {k: v for k, v in payload.items() if v is not None}

@@ -155,7 +155,7 @@ def jwt_required(
 
             if fresh_required and not token_obj.fresh:
                 raise FreshTokenRequiredError("Only fresh access tokens are allowed")
-            
+
             if isinstance(token_obj.role, str):
                 if allow and token_obj.role not in allow:
                     raise AccessDeniedError("You are not allowed to access here")
@@ -169,7 +169,7 @@ def jwt_required(
 
                 if deny and set(token_obj.role).intersection(set(deny)):
                     raise AccessDeniedError("You are not allowed to access here")
-            
+
             if JWT.config.use_blacklist and await JWT.blacklist.is_blacklisted(
                 token_obj
             ):

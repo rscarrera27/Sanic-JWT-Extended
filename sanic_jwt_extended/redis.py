@@ -13,7 +13,7 @@ class RedisConnection:  # pragma: no cover
         if cls.redis and not cls.redis.closed:
             return cls.redis
 
-        cls.redis = await aioredis.create_redis_pool(cls.connection_info)
+        cls.redis = await aioredis.create_redis_pool(**cls.connection_info)
         return cls.redis
 
     @classmethod

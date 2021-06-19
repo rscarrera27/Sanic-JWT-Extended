@@ -1,6 +1,7 @@
 import warnings
-from abc import ABC, abstractmethod
+from datetime import datetime
 
+from abc import ABC, abstractmethod
 from sanic_jwt_extended.redis import RedisConnection
 
 
@@ -39,7 +40,7 @@ class RedisBlacklist(BlacklistABC):  # pragma: no cover
         kwargs = {}
 
         if token.exp:
-            kwargs["expire"] = token.exp
+            kwargs["expire"] = int((token.exp - datetime.utcnow()).total_seconds())
 
         await RedisConnection.set(token.jti.hex, token.raw_jwt, **kwargs)
 
@@ -47,4 +48,4 @@ class RedisBlacklist(BlacklistABC):  # pragma: no cover
         if not RedisConnection.redis:
             await RedisConnection.initialize(self.connection_info)
 
-        return bool(RedisConnection.get(token.jti.hex))
+        return bool(await RedisConnection.get(token.jti.hex))

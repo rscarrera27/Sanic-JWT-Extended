@@ -40,7 +40,8 @@ class RedisBlacklist(BlacklistABC):  # pragma: no cover
         kwargs = {}
 
         if token.exp:
-            kwargs["expire"] = int((token.exp - datetime.utcnow()).total_seconds())
+            kwargs["expire"] = int(
+                (token.exp - datetime.utcnow()).total_seconds())
 
         await RedisConnection.set(token.jti.hex, token.raw_jwt, **kwargs)
 

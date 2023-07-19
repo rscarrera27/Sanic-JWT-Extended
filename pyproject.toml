@@ -24,7 +24,7 @@ classifiers=[
 [tool.poetry.dependencies]
 python = "^3.6"
 sanic = ">= 18.12.0"
-PyJWT = "^1.6.4"
+PyJWT = ">=1.6.4,<3.0.0"
 dataclasses = { version = "*", python = "3.6.*" }
 flatten-dict = "^0.2.0"
 aioredis = "^1.3"
